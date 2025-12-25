@@ -50,7 +50,8 @@ def signin(request):
             if username == 'admin':
                 return render(request, 'admin_home.html')
             else:
-                return render(request, 'customer_home.html')   
+                restaurantList = Restaurant.objects.all()
+                return render(request, 'customer_home.html', {"restaurantList": restaurantList, "username": username})   
         
         except User.DoesNotExist:
             return render(request, 'fail.html')    
@@ -81,5 +82,9 @@ def add_restaurant(request):
             )
         return HttpResponse("Successfully added")
         #return render(request, 'admin_home.html')
+        
+def show_restaurant(request):
+    restaurantList = Restaurant.objects.all()
+    return render(request, 'show_restaurants.html', {"restaurantList": restaurantList})
     
         
