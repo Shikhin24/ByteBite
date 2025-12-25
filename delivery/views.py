@@ -1,6 +1,6 @@
 from django.http import HttpResponse
-from django.shortcuts import render
-from .models import Restaurant, User
+from django.shortcuts import render, get_object_or_404
+from .models import Item, Restaurant, User
 
 def index(request):
     #return HttpResponse("welcome to bytebite")
@@ -86,5 +86,42 @@ def add_restaurant(request):
 def show_restaurant(request):
     restaurantList = Restaurant.objects.all()
     return render(request, 'show_restaurants.html', {"restaurantList": restaurantList})
+
+def open_update_menu(request, restaurant_id):
+    restaurant = get_object_or_404(Restaurant, id=restaurant_id)
+    
+    items = Item.objects.filter(restaurant=restaurant)
+    return render(request,'update_menu.html',
+        {'restaurant': restaurant,'items': items}
+    )
+
+
+def update_menu(request, restaurant_id):
+    restaurant = get_object_or_404(Restaurant, id=restaurant_id)
+
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+        picture = request.POST.get('picture')
+        price = request.POST.get('price')
+        nonVeg = request.POST.get('nonVeg') == 'on'
+
+        if not all([name, description, picture, price]):
+            return HttpResponse("All fields are required")
+
+        if Item.objects.filter(name=name, restaurant=restaurant).exists():
+            return HttpResponse("Duplicate menu")
+
+        Item.objects.create(
+            restaurant=restaurant,
+            name=name,
+            description=description,
+            price=price,
+            nonVeg=nonVeg,
+            picture=picture
+        )
+
+        return HttpResponse("Menu added successfully")
+    
     
         
