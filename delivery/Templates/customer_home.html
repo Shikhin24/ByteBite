@@ -6,7 +6,10 @@
     <title>Customer page</title>
 </head>
 <body>
-    <h3>Welcome {{user.username}}</h3>
-    <p>view restaurants</p>
+
+<h2>Welcome {{ username }}</h2>
+
+<a href="{% url 'show_restaurant' %}">View Restaurants</a>
+
 </body>
 </html>

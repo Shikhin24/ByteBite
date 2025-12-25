@@ -46,12 +46,20 @@ def signin(request):
             return HttpResponse("Username and password are required")
         
         try:
-            User.objects.get(username = username, password = password)
+            User.objects.get(username=username, password=password)
+
             if username == 'admin':
+                request.session['is_admin'] = True
                 return render(request, 'admin_home.html')
             else:
+                request.session['is_admin'] = False
                 restaurantList = Restaurant.objects.all()
-                return render(request, 'customer_home.html', {"restaurantList": restaurantList, "username": username})   
+                return render(request,'customer_home.html',
+                    {
+                        "restaurantList": restaurantList,
+                        "username": username
+                    }
+                )  
         
         except User.DoesNotExist:
             return render(request, 'fail.html')    
@@ -85,7 +93,9 @@ def add_restaurant(request):
         
 def show_restaurant(request):
     restaurantList = Restaurant.objects.all()
-    return render(request, 'show_restaurants.html', {"restaurantList": restaurantList})
+    is_admin = request.session.get('is_admin', False)
+
+    return render(request,'show_restaurants.html',{'restaurantList': restaurantList,'is_admin': is_admin})
 
 def open_update_menu(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, id=restaurant_id)
@@ -122,6 +132,13 @@ def update_menu(request, restaurant_id):
         )
 
         return HttpResponse("Menu added successfully")
+    
+
+def view_menu(request, restaurant_id):
+    restaurant = get_object_or_404(Restaurant, id=restaurant_id)
+    items = Item.objects.filter(restaurant=restaurant)
+
+    return render(request, 'view_menu.html', {'restaurant': restaurant,'items': items})
     
     
         
