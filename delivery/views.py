@@ -167,6 +167,11 @@ def update_restaurant(request, restaurant_id):
         restaurant.save()
     restaurantList = Restaurant.objects.all()
     return render(request, 'show_restaurants.html', {"restaurantList" : restaurantList})
+
+def delete_restaurant(request, restaurant_id):
+    restaurant = get_object_or_404(Restaurant, id=restaurant_id)
+    restaurant.delete()
     
-    
+    restaurantList = Restaurant.objects.all()
+    return render(request, 'show_restaurants.html', {"restaurantList" : restaurantList})
         

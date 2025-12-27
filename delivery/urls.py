@@ -31,5 +31,9 @@ urlpatterns = [
         views.update_restaurant,
         name='update_restaurant'
     ),
+    path('restaurant/<int:restaurant_id>/delete_restaurant/',
+        views.delete_restaurant,
+        name='delete_restaurant'
+    ),
     
 ]

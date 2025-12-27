@@ -29,7 +29,7 @@
             {% if is_admin %}
             <a href="{% url 'open_update_restaurant' r.id %}">Update Restaurant</a>
             <br />
-            <a href="">Delete Restaurant</a>
+            <a href="{% url 'delete_restaurant' r.id %}">Delete Restaurant</a>
             <br />
             <a href="{% url 'open_update_menu' r.id %}">Update Menu</a>
             {% else %}
