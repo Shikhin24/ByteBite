@@ -139,6 +139,34 @@ def view_menu(request, restaurant_id):
     items = Item.objects.filter(restaurant=restaurant)
 
     return render(request, 'view_menu.html', {'restaurant': restaurant,'items': items})
+
+def open_update_restaurant(request, restaurant_id):
+    restaurant = get_object_or_404(Restaurant, id=restaurant_id)
+    return render(request,'update_restaurant.html',{'restaurant': restaurant})
+
+def update_restaurant(request, restaurant_id):
+    restaurant = get_object_or_404(Restaurant, id=restaurant_id)
+
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        picture = request.POST.get('picture')
+        cuisine = request.POST.get('cuisine')
+        rating = request.POST.get('rating')
+
+        if not all([name, picture, cuisine, rating]):
+            return HttpResponse("All fields are required")
+
+        if Item.objects.filter(name=name, restaurant=restaurant).exists():
+            return HttpResponse("Duplicate menu")
+
+        restaurant.name = name
+        restaurant.picture = picture
+        restaurant.cuisine = cuisine
+        restaurant.rating = rating
+
+        restaurant.save()
+    restaurantList = Restaurant.objects.all()
+    return render(request, 'show_restaurants.html', {"restaurantList" : restaurantList})
     
     
         

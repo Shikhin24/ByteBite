@@ -23,4 +23,13 @@ urlpatterns = [
     views.view_menu,
     name='view_menu'
     ),
+    path('restaurant/<int:restaurant_id>/open_update_restaurant/',
+        views.open_update_restaurant,
+        name='open_update_restaurant'
+    ),
+    path('restaurant/<int:restaurant_id>/update_restaurant/',
+        views.update_restaurant,
+        name='update_restaurant'
+    ),
+    
 ]
