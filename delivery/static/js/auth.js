@@ -30,3 +30,19 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
 });
+
+signinTab.addEventListener("click", () => {
+  signinForm.classList.add("active");
+  signupForm.classList.remove("active");
+  signinTab.classList.add("active");
+  signupTab.classList.remove("active");
+});
+
+signupTab.addEventListener("click", () => {
+  signupForm.classList.add("active");
+  signinForm.classList.remove("active");
+  signupTab.classList.add("active");
+  signinTab.classList.remove("active");
+});
+
+

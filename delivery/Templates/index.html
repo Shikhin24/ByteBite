@@ -1,14 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ByteBite | Welcome</title>
-  {% load static %}
-  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-</head>
+{% extends "base.html" %}
+{% load static %}
+{% block title %}ByteBite | Welcome{% endblock %}
 
-<body>
+{% block content %}
   <div class="page">
     <div class="auth-layout">
 
@@ -24,17 +18,34 @@
 
         <!-- Toggle bar -->
         <div class="auth-toggle">
-          <button id="signinTab" class="toggle-btn active">Sign in</button>
-          <button id="signupTab" class="toggle-btn">Sign up</button>
+          <button id="signinTab" class="toggle-btn {% if active_tab == 'signin' %}active{% endif %}">
+            Sign in
+          </button>
+
+          <button id="signupTab" class="toggle-btn {% if active_tab == 'signup' %}active{% endif %}">
+            Sign up
+          </button>
         </div>
 
         <!-- Sign in -->
-        <div id="signinForm" class="auth-form active">
+        <div id="signinForm" class="auth-form {% if active_tab == 'signin' %}active{% endif %}">
           <form action="{% url 'signin' %}" method="post">
             {% csrf_token %}
+            
+            {% if signup_success and active_tab == 'signin' %}
+              <p style="color: #2ecc71; margin-bottom: 10px;">
+              {{ signup_success }}
+              </p>
+          {% endif %}
 
+            {% if login_error %}
+              <p style="color:red; margin-bottom:10px;">
+              {{ login_error }}
+              </p>
+            {% endif %}
             <label>Username</label>
             <input type="text" name="username">
+
 
             <label>Password</label>
             <div class="password-field">
@@ -63,9 +74,15 @@
         </div>
 
         <!-- Sign up -->
-        <div id="signupForm" class="auth-form">
+        <div id="signupForm" class="auth-form {% if active_tab == 'signup' %}active{% endif %}">
           <form action="{% url 'signup' %}" method="post">
             {% csrf_token %}
+            
+            {% if signup_error %}
+              <p style="color:red; margin-bottom:10px;">
+              {{ signup_error }}
+              </p>
+            {% endif %}
 
             <label>Username</label>
             <input type="text" name="username">
@@ -108,5 +125,4 @@
   </div>
 
   <script src="{% static 'js/auth.js' %}"></script>
-</body>
-</html>
+{% endblock %}

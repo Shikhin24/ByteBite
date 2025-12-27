@@ -1,10 +1,16 @@
 from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from .models import Item, Restaurant, User
 
 def index(request):
-    #return HttpResponse("welcome to bytebite")
-    return render(request, "index.html")
+    context = {
+        'login_error': request.session.pop('login_error', None),
+        'signup_error': request.session.pop('signup_error', None),
+        'signup_success': request.session.pop('signup_success', None),
+        'active_tab': request.session.pop('active_tab', 'signin'),
+    }
+    return render(request, "index.html", context)
+
 
 def open_signup(request):
     return render(request, "signup.html")
@@ -19,50 +25,54 @@ def signup(request):
         email = request.POST.get('email')
         mobile = request.POST.get('mobile')
         address = request.POST.get('address')
-        
+
         if not username or not password or not email:
-            return HttpResponse("Username, email and password are required")
-        
+            request.session['signup_error'] = 'All mandatory fields must be filled'
+            request.session['active_tab'] = 'signup'
+            return redirect('/')
+
         if User.objects.filter(email=email).exists():
-            return HttpResponse("email already exists. enter different email id")
-        
-        user = User(username=username, password=password, email=email, mobile=mobile, address=address)
-        user.save()
-        
-        #return HttpResponse("sign up successful")
-        #return HttpResponse(f"Username: {username}, Password: {password}, Email: {email}, mobile: {mobile}, Address: {address}")
-        #return HttpResponse("Sign up successful data saved")
-        
-        return render(request, 'signin.html')
-    
-    return HttpResponse("invalid response")
+            request.session['signup_error'] = 'Email already exists. Try another one'
+            request.session['active_tab'] = 'signup'
+            return redirect('/')
+
+        User.objects.create(
+            username=username,
+            password=password,
+            email=email,
+            mobile=mobile,
+            address=address
+        )
+
+        # success → go to signin
+        request.session['signup_success'] = 'Signup successful. Please sign in.'
+        request.session['active_tab'] = 'signin'
+        return redirect('/')
     
 def signin(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-        
+
         if not username or not password:
-            return HttpResponse("Username and password are required")
-        
+            request.session['login_error'] = 'Username and password are required'
+            return redirect('/')
+
         try:
             User.objects.get(username=username, password=password)
 
             if username == 'admin':
                 request.session['is_admin'] = True
-                return render(request, 'admin_home.html')
-            else:
-                request.session['is_admin'] = False
-                restaurantList = Restaurant.objects.all()
-                return render(request,'customer_home.html',
-                    {
-                        "restaurantList": restaurantList,
-                        "username": username
-                    }
-                )  
-        
+                return redirect('/admin_home')  # or wherever admin lands
+
+            request.session['is_admin'] = False
+            request.session['username'] = username
+            return redirect('/show_restaurant')
+
         except User.DoesNotExist:
-            return render(request, 'fail.html')    
+            request.session['login_error'] = 'Invalid username or password'
+            return redirect('/')
+ 
         
 def open_add_restaurant(request):
     return render(request, 'add_restaurants.html')

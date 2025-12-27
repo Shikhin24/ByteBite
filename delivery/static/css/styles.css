@@ -176,3 +176,24 @@ textarea:focus {
 .toggle-password.visible .eye-closed {
   display: block;
 }
+
+/* Toast messages */
+.toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+}
+
+.toast {
+  background: #222;
+  color: #fff;
+  padding: 12px 16px;
+  margin-top: 10px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.toast.success { background: #2ecc71; }
+.toast.error { background: #e74c3c; }
+
