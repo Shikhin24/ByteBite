@@ -11,6 +11,11 @@ body {
   color: #eaeaea;
 }
 
+.form-container {
+  position: relative;
+  flex: 1;
+}
+
 /* ===== LAYOUT ===== */
 .page {
   min-height: 100vh;
@@ -40,20 +45,13 @@ body {
   padding: 26px;
   background: linear-gradient(180deg, #1c1c1c, #161616);
   border: 1px solid #2a2a2a;
-  max-height: 90vh;
-  overflow-y: auto;
 }
+
 
 .card h2 {
   text-align: center;
   font-size: 20px;
-  margin-bottom: 18px;
-}
-
-.divider {
-  height: 1px;
-  background: #2a2a2a;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
 }
 
 /* ===== TOGGLE BAR ===== */
@@ -74,6 +72,14 @@ body {
   font-weight: 600;
   color: #bdbdbd;
   cursor: pointer;
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.toggle-btn:hover {
+  background: #1d1d1d;
 }
 
 .toggle-btn.active {
@@ -84,11 +90,26 @@ body {
 /* ===== FORMS ===== */
 .auth-form {
   display: none;
+  opacity: 0;
+  transform: translateY(6px);
 }
 
 .auth-form.active {
   display: block;
+  animation: formFade 0.2s ease forwards;
 }
+
+@keyframes formFade {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 
 label {
   display: block;
@@ -148,12 +169,16 @@ textarea:focus {
   position: absolute;
   top: 50%;
   right: 12px;
+  width: 18px;
+  height: 18px;
   transform: translateY(-50%);
   cursor: pointer;
 }
 
 .toggle-password svg {
-  vertical-align: middle;
+  position: absolute;
+  inset: 0;
+  margin: auto;
   width: 18px;
   height: 18px;
   stroke: #9a9a9a;
@@ -177,23 +202,17 @@ textarea:focus {
   display: block;
 }
 
-/* Toast messages */
-.toast-container {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 9999;
-}
-
-.toast {
-  background: #222;
-  color: #fff;
-  padding: 12px 16px;
-  margin-top: 10px;
-  border-radius: 6px;
+.form-msg {
   font-size: 14px;
+  margin-bottom: 8px;
 }
 
-.toast.success { background: #2ecc71; }
-.toast.error { background: #e74c3c; }
+.form-msg.error {
+  color: #ff4d4d;
+}
+
+.form-msg.success {
+  color: #2ecc71;
+}
+
 

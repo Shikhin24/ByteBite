@@ -33,14 +33,14 @@
             {% csrf_token %}
             
             {% if signup_success and active_tab == 'signin' %}
-              <p style="color: #2ecc71; margin-bottom: 10px;">
-              {{ signup_success }}
+              <p class="form-msg success">
+                {{ signup_success }}
               </p>
           {% endif %}
 
             {% if login_error %}
-              <p style="color:red; margin-bottom:10px;">
-              {{ login_error }}
+              <p class="form-msg error">
+                {{ login_error }}
               </p>
             {% endif %}
             <label>Username</label>
@@ -79,8 +79,8 @@
             {% csrf_token %}
             
             {% if signup_error %}
-              <p style="color:red; margin-bottom:10px;">
-              {{ signup_error }}
+              <p class="form-msg error">
+                {{ signup_error }}
               </p>
             {% endif %}
 

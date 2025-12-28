@@ -27,12 +27,12 @@ def signup(request):
         address = request.POST.get('address')
 
         if not username or not password or not email:
-            request.session['signup_error'] = 'All mandatory fields must be filled'
+            request.session['signup_error'] = 'All fields are mandatory.'
             request.session['active_tab'] = 'signup'
             return redirect('/')
 
         if User.objects.filter(email=email).exists():
-            request.session['signup_error'] = 'Email already exists. Try another one'
+            request.session['signup_error'] = 'E-mail already exists.'
             request.session['active_tab'] = 'signup'
             return redirect('/')
 
@@ -45,7 +45,7 @@ def signup(request):
         )
 
         # success → go to signin
-        request.session['signup_success'] = 'Signup successful. Please sign in.'
+        request.session['signup_success'] = 'Signup successful!'
         request.session['active_tab'] = 'signin'
         return redirect('/')
     
@@ -55,7 +55,7 @@ def signin(request):
         password = request.POST.get('password')
 
         if not username or not password:
-            request.session['login_error'] = 'Username and password are required'
+            request.session['login_error'] = 'Username and password are required.'
             return redirect('/')
 
         try:

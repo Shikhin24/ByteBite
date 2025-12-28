@@ -19,6 +19,22 @@ document.addEventListener("DOMContentLoaded", () => {
     signinForm.classList.remove("active");
   };
 
+  signinTab.addEventListener("click", () => {
+    signinTab.classList.add("active");
+    signupTab.classList.remove("active");
+
+    signinForm.classList.add("active");
+    signupForm.classList.remove("active");
+  });
+
+  signupTab.addEventListener("click", () => {
+    signupTab.classList.add("active");
+    signinTab.classList.remove("active");
+
+    signupForm.classList.add("active");
+    signinForm.classList.remove("active");
+  });
+
   document.querySelectorAll(".toggle-password").forEach(btn => {
     btn.onclick = () => {
       const input = document.getElementById(btn.dataset.target);
@@ -30,19 +46,3 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
 });
-
-signinTab.addEventListener("click", () => {
-  signinForm.classList.add("active");
-  signupForm.classList.remove("active");
-  signinTab.classList.add("active");
-  signupTab.classList.remove("active");
-});
-
-signupTab.addEventListener("click", () => {
-  signupForm.classList.add("active");
-  signinForm.classList.remove("active");
-  signupTab.classList.add("active");
-  signinTab.classList.remove("active");
-});
-
-
