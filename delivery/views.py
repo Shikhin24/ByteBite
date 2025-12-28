@@ -51,26 +51,26 @@ def signup(request):
     
 def signin(request):
     if request.method == 'POST':
-        username = request.POST.get('username','').strip()
+        email = request.POST.get('email','').strip()
         password = request.POST.get('password').strip()
 
-        if not username or not password:
-            request.session['login_error'] = 'Username and password are required.'
+        if not email or not password:
+            request.session['login_error'] = 'E-mail and password are required.'
             return redirect('/')
 
         try:
-            User.objects.get(username=username, password=password)
+            user = User.objects.get(email=email, password=password)
 
-            if username == 'admin':
+            if user.username == 'admin':
                 request.session['is_admin'] = True
                 return redirect('admin_home')
 
             request.session['is_admin'] = False
-            request.session['username'] = username
+            request.session['username'] = user.username
             return redirect('/show_restaurant')
 
         except User.DoesNotExist:
-            request.session['login_error'] = 'Invalid username or password'
+            request.session['login_error'] = 'Invalid e-mail or password'
             return redirect('/')
         
 def admin_home(request):
