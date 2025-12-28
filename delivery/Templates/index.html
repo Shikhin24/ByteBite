@@ -3,126 +3,121 @@
 {% block title %}ByteBite | Welcome{% endblock %}
 
 {% block content %}
-  <div class="page">
-    <div class="auth-layout">
+<div class="page">
+  <div class="auth-layout">
 
-      <!-- Left image -->
-      <div class="auth-image">
-        <img src="{% static 'images/auth.jpg' %}" alt="Auth image">
+    <!-- Left image -->
+    <div class="auth-image">
+    </div>
+
+    <!-- Auth card -->
+    <div class="card">
+      <h2>Welcome to ByteBite</h2>
+      <div class="divider"></div>
+
+      <!-- Toggle bar -->
+      <div class="auth-toggle">
+        <button id="signinTab" class="toggle-btn {% if active_tab == 'signin' %}active{% endif %}">
+          Sign in
+        </button>
+
+        <button id="signupTab" class="toggle-btn {% if active_tab == 'signup' %}active{% endif %}">
+          Sign up
+        </button>
       </div>
 
-      <!-- Auth card -->
-      <div class="card">
-        <h2>Welcome to ByteBite</h2>
-        <div class="divider"></div>
+      <!-- Sign in -->
+      <div id="signinForm" class="auth-form {% if active_tab == 'signin' %}active{% endif %}">
+        <form action="{% url 'signin' %}" method="post" autocomplete="off">
+          {% csrf_token %}
 
-        <!-- Toggle bar -->
-        <div class="auth-toggle">
-          <button id="signinTab" class="toggle-btn {% if active_tab == 'signin' %}active{% endif %}">
-            Sign in
-          </button>
-
-          <button id="signupTab" class="toggle-btn {% if active_tab == 'signup' %}active{% endif %}">
-            Sign up
-          </button>
-        </div>
-
-        <!-- Sign in -->
-        <div id="signinForm" class="auth-form {% if active_tab == 'signin' %}active{% endif %}">
-          <form action="{% url 'signin' %}" method="post">
-            {% csrf_token %}
-            
-            {% if signup_success and active_tab == 'signin' %}
-              <p class="form-msg success">
-                {{ signup_success }}
-              </p>
+          {% if signup_success and active_tab == 'signin' %}
+          <p class="form-msg success">
+            {{ signup_success }}
+          </p>
           {% endif %}
 
-            {% if login_error %}
-              <p class="form-msg error">
-                {{ login_error }}
-              </p>
-            {% endif %}
-            <label>Username</label>
-            <input type="text" name="username">
+          {% if login_error %}
+          <p class="form-msg error">
+            {{ login_error }}
+          </p>
+          {% endif %}
+          <label>Username</label>
+          <input type="text" name="username">
 
 
-            <label>Password</label>
-            <div class="password-field">
-              <input type="password" name="password" id="signinPassword">
+          <label>Password</label>
+          <div class="password-field">
+            <input type="password" name="password" id="signinPassword">
 
-              <button type="button"
-                      class="toggle-password"
-                      data-target="signinPassword"
-                      aria-label="Toggle password visibility">
-                <!-- eye -->
-                <svg class="eye eye-open" viewBox="0 0 24 24">
-                  <path d="M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7z"/>
-                  <circle cx="12" cy="12" r="2.5"/>
-                </svg>
-                <!-- eye slash -->
-                <svg class="eye eye-closed" viewBox="0 0 24 24">
-                  <path d="M2 2l20 20"/>
-                  <path d="M12 5c5 0 9.27 3.11 11 7"/>
-                  <path d="M1 12c1.73 3.89 6 7 11 7"/>
-                </svg>
-              </button>
-            </div>
+            <button type="button" class="toggle-password" data-target="signinPassword"
+              aria-label="Toggle password visibility">
+              <!-- eye -->
+              <svg class="eye eye-open" viewBox="0 0 24 24">
+                <path d="M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7z" />
+                <circle cx="12" cy="12" r="2.5" />
+              </svg>
+              <!-- eye slash -->
+              <svg class="eye eye-closed" viewBox="0 0 24 24">
+                <path d="M2 2l20 20" />
+                <path d="M12 5c5 0 9.27 3.11 11 7" />
+                <path d="M1 12c1.73 3.89 6 7 11 7" />
+              </svg>
+            </button>
+          </div>
 
-            <button type="submit">Sign in</button>
-          </form>
-        </div>
-
-        <!-- Sign up -->
-        <div id="signupForm" class="auth-form {% if active_tab == 'signup' %}active{% endif %}">
-          <form action="{% url 'signup' %}" method="post">
-            {% csrf_token %}
-            
-            {% if signup_error %}
-              <p class="form-msg error">
-                {{ signup_error }}
-              </p>
-            {% endif %}
-
-            <label>Username</label>
-            <input type="text" name="username">
-
-            <label>Password</label>
-            <div class="password-field">
-              <input type="password" name="password" id="signupPassword">
-
-              <button type="button"
-                      class="toggle-password"
-                      data-target="signupPassword"
-                      aria-label="Toggle password visibility">
-                <svg class="eye eye-open" viewBox="0 0 24 24">
-                  <path d="M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7z"/>
-                  <circle cx="12" cy="12" r="2.5"/>
-                </svg>
-                <svg class="eye eye-closed" viewBox="0 0 24 24">
-                  <path d="M2 2l20 20"/>
-                  <path d="M12 5c5 0 9.27 3.11 11 7"/>
-                  <path d="M1 12c1.73 3.89 6 7 11 7"/>
-                </svg>
-              </button>
-            </div>
-
-            <label>Email</label>
-            <input type="email" name="email">
-
-            <label>Mobile</label>
-            <input type="text" name="mobile">
-
-            <label>Address</label>
-            <textarea name="address"></textarea>
-
-            <button type="submit">Sign up</button>
-          </form>
-        </div>
-
+          <button type="submit">Sign in</button>
+        </form>
       </div>
+
+      <!-- Sign up -->
+      <div id="signupForm" class="auth-form {% if active_tab == 'signup' %}active{% endif %}">
+        <form action="{% url 'signup' %}" method="post" autocomplete="off">
+          {% csrf_token %}
+
+          {% if signup_error %}
+          <p class="form-msg error">
+            {{ signup_error }}
+          </p>
+          {% endif %}
+
+          <label>Username</label>
+          <input type="text" name="username">
+
+          <label>Password</label>
+          <div class="password-field">
+            <input type="password" name="password" id="signupPassword">
+
+            <button type="button" class="toggle-password" data-target="signupPassword"
+              aria-label="Toggle password visibility">
+              <svg class="eye eye-open" viewBox="0 0 24 24">
+                <path d="M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7z" />
+                <circle cx="12" cy="12" r="2.5" />
+              </svg>
+              <svg class="eye eye-closed" viewBox="0 0 24 24">
+                <path d="M2 2l20 20" />
+                <path d="M12 5c5 0 9.27 3.11 11 7" />
+                <path d="M1 12c1.73 3.89 6 7 11 7" />
+              </svg>
+            </button>
+          </div>
+
+          <label>Email</label>
+          <input type="email" name="email">
+
+          <label>Mobile</label>
+          <input type="text" name="mobile">
+
+          <label>Address</label>
+          <textarea name="address"></textarea>
+
+          <button type="submit">Sign up</button>
+        </form>
+      </div>
+
     </div>
   </div>
+</div>
 
-  <script src="{% static 'js/auth.js' %}"></script>
+<script src="{% static 'js/auth.js' %}"></script>
 {% endblock %}

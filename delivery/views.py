@@ -20,11 +20,11 @@ def open_signin(request):
 
 def signup(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        email = request.POST.get('email')
-        mobile = request.POST.get('mobile')
-        address = request.POST.get('address')
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '').strip()
+        email = request.POST.get('email', '').strip()
+        mobile = request.POST.get('mobile', '').strip()
+        address = request.POST.get('address', '').strip()
 
         if not username or not password or not email:
             request.session['signup_error'] = 'All fields are mandatory.'
@@ -51,8 +51,8 @@ def signup(request):
     
 def signin(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
+        username = request.POST.get('username','').strip()
+        password = request.POST.get('password').strip()
 
         if not username or not password:
             request.session['login_error'] = 'Username and password are required.'
@@ -63,7 +63,7 @@ def signin(request):
 
             if username == 'admin':
                 request.session['is_admin'] = True
-                return redirect('/admin_home')  # or wherever admin lands
+                return redirect('admin_home')
 
             request.session['is_admin'] = False
             request.session['username'] = username
@@ -72,7 +72,13 @@ def signin(request):
         except User.DoesNotExist:
             request.session['login_error'] = 'Invalid username or password'
             return redirect('/')
- 
+        
+def admin_home(request):
+    # block non-admin access
+    if not request.session.get('is_admin'):
+        return redirect('/')
+    
+    return render(request, 'admin_home.html') 
         
 def open_add_restaurant(request):
     return render(request, 'add_restaurants.html')
