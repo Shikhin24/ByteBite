@@ -1,18 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Add restaurant</title>
-  </head>
-  <body>
+{% extends "base.html" %}
+{% block title %}Admin | ByteBite{% endblock %}
+{% block content %}
+    <div class="card">
     <form action="{% url 'add_restaurant' %}" method="POST">
       {% csrf_token %}
-      <label>Restaurant name </label>
-      <input type="text" name="name" />
+      <label for="rest-name">Restaurant name </label>
+      <input id="rest-name" type="text" name="name" />
       <br /><br />
-      <label>Picture url </label>
-      <input type="url" name="picture" />
+      <label for="rest-picture">Picture url </label>
+      <input id="rest-picture" type="url" name="picture" />
       <br /><br />
       <label>Cuisine </label>
       <input type="text" name="cuisine" />
@@ -23,5 +19,5 @@
       <br /><br />
       <button type="submit">add</button>
     </form>
-  </body>
-</html>
+  </div>
+{% endblock %}

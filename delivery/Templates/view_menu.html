@@ -1,13 +1,10 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>{{ restaurant.name }} Menu</title>
-  </head>
-  <body>
+{% extends "base.html" %}
+{% block title %}{{ restaurant.name }} Menu{% endblock %}
+{% block content %}
     <h2>{{ restaurant.name }} Menu</h2>
 
     {% if items %}
-    <table border="1">
+    <table class="data-table">
       <tr>
         <th>Name</th>
         <th>Description</th>
@@ -34,5 +31,4 @@
 
     <br />
     <a href="{% url 'show_restaurant' %}">Back to Restaurants</a>
-  </body>
-</html>
+{% endblock %}

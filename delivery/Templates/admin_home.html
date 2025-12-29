@@ -1,14 +1,80 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Page</title>
-</head>
-<body>
-    <h3>Welcome to Admin Home</h3>
-    <a href="{% url 'open_add_restaurant' %}"> add new restaurant</a>
-    <br><br>
-    <a href="{% url 'show_restaurant' %}"> show restaurants</a>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Admin | ByteBite{% endblock %}
+
+{% block content %}
+<div class="admin-layout">
+
+    <!-- HEADER -->
+    <header class="admin-header">
+        <!-- TITLE AREA -->
+        <div class="admin-title">
+            <h1>Welcome, Admin 👋</h1>
+            <p>Manage restaurants and their menus from here.</p>
+        </div>
+
+        <div class="admin-topbar">
+            <div class="admin-links">
+                <a href="/">Home</a>
+                <a href="/logout">Logout</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN DASHBOARD -->
+    <div class="admin-dashboard">
+
+        <!-- LEFT: MAIN CONTENT -->
+        <section class="admin-main">
+
+            <!-- STATS -->
+            <div class="admin-stats">
+                <div class="stat">
+                    <span class="stat-number">{{ restaurant_count }}</span>
+                    <span class="stat-label">Restaurants</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">{{ menu_count }}</span>
+                    <span class="stat-label">Menu Items</span>
+                </div>
+            </div>
+
+            <!-- ACTIONS -->
+            <div class="admin-actions">
+                <a href="{% url 'open_add_restaurant' %}" class="admin-card primary">
+                    <h3>Add Restaurant</h3>
+                    <p>Create a new restaurant listing</p>
+                </a>
+
+                <a href="{% url 'show_restaurant' %}" class="admin-card">
+                    <h3>View Restaurants</h3>
+                    <p>Update, delete, or manage menus</p>
+                </a>
+            </div>
+
+        </section>
+
+        <!-- RIGHT: SIDEBAR -->
+        <aside class="admin-sidebar">
+
+            <div class="admin-panel">
+                <h4>Recent Activity</h4>
+                <ul>
+                    <li>
+                        Added new restaurant
+                        <span class="time">- today</span>
+                    </li>
+                    <li>
+                        Updated menu items
+                        <span class="time">- 2 days ago</span>
+                    </li>
+                    <li>
+                        Removed outdated listing
+                        <span class="time">- last week</span>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+
+    </div>
+</div>
+{% endblock %}

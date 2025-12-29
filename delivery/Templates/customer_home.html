@@ -1,15 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer page</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}Customer page{% endblock %}
+{% block content %}
 
+<nav class="top-nav">
 <h2>Welcome {{ username }}</h2>
 
-    <table border="1">
+    <table class="data-table">
       <thead>
         <tr>
           <th>Restaurant name</th>
@@ -35,6 +31,6 @@
         {% endfor %}
       </tbody>
     </table>
+  </nav>
 
-</body>
-</html>
+{% endblock %}

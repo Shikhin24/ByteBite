@@ -74,11 +74,18 @@ def signin(request):
             return redirect('/')
         
 def admin_home(request):
-    # block non-admin access
     if not request.session.get('is_admin'):
         return redirect('/')
-    
-    return render(request, 'admin_home.html') 
+
+    restaurant_count = Restaurant.objects.count()
+    menu_count = Item.objects.count()
+
+    context = {
+        'restaurant_count': restaurant_count,
+        'menu_count': menu_count,
+    }
+
+    return render(request, 'admin_home.html', context)
         
 def open_add_restaurant(request):
     return render(request, 'add_restaurants.html')

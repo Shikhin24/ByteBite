@@ -1,12 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Restaurants List</title>
-  </head>
-  <body>
-    <table border="1">
+{% extends "base.html" %}
+{% block title %}Restaurants list{% endblock %}
+{% block content %}
+    <table class="data-table">
       <thead>
         <tr>
           <th>Restaurant name</th>
@@ -36,5 +31,4 @@
         {% endfor %}
       </tbody>
     </table>
-  </body>
-</html>
+{% endblock %}

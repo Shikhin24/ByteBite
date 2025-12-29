@@ -1,16 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>update menu</title>
-  </head>
-  <body>
+{% extends "base.html" %}
+{% block title %}Update menu{% endblock %}
+{% block content %}
+
     <h2>Menu for {{ restaurant.name }}</h2>
 
     <!-- 🔹 EXISTING MENU LIST -->
     {% if items %}
-    <table border="1">
+    <table class="data-table">
       <tr>
         <th>Name</th>
         <th>Description</th>
@@ -38,13 +34,15 @@
     <hr />
 
     <!-- 🔹 ADD MENU FORM -->
+
+    <div class="card">
     <h3>Add New Menu Item</h3>
 
     <form action="{% url 'update_menu' restaurant.id %}" method="POST">
       {% csrf_token %}
 
-      <label>Menu name</label>
-      <input type="text" name="name" required /><br /><br />
+      <label for="menu-name">Menu name</label>
+      <input id="menu-name" type="text" name="name" required /><br /><br />
 
       <label>Description</label>
       <input type="text" name="description" required /><br /><br />
@@ -52,13 +50,13 @@
       <label>Image URL</label>
       <input type="url" name="picture" required /><br /><br />
 
-      <label>Price</label>
-      <input type="number" step="0.01" name="price" required /><br /><br />
+      <label for="menu-price">Price</label>
+      <input id="menu-price" type="number" step="0.01" name="price" required /><br /><br />
 
       <label> <input type="checkbox" name="nonVeg" /> Non-Veg </label
       ><br /><br />
 
       <button type="submit">Add Menu</button>
     </form>
-  </body>
-</html>
+  </div>
+{% endblock %}

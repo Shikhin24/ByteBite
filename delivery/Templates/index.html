@@ -42,11 +42,11 @@
             {{ login_error }}
           </p>
           {% endif %}
-          <label>Email</label>
-          <input type="email" name="email">
+          <label for="signin-email">Email</label>
+          <input id="signin-email" type="email" name="email">
 
 
-          <label>Password</label>
+          <label for="signinPassword">Password</label>
           <div class="password-field">
             <input type="password" name="password" id="signinPassword">
 
@@ -81,10 +81,10 @@
           </p>
           {% endif %}
 
-          <label>Username</label>
-          <input type="text" name="username">
+          <label for="signup-username">Username</label>
+          <input id="signup-username" type="text" name="username">
 
-          <label>Password</label>
+          <label for="signupPassword">Password</label>
           <div class="password-field">
             <input type="password" name="password" id="signupPassword">
 
@@ -102,13 +102,13 @@
             </button>
           </div>
 
-          <label>Email</label>
-          <input type="email" name="email">
+          <label for="signup-email">Email</label>
+          <input id="signup-email" type="email" name="email">
 
           <label>Mobile</label>
           <input type="text" name="mobile">
 
-          <label>Address</label>
+          <label >Address</label>
           <textarea name="address"></textarea>
 
           <button type="submit">Sign up</button>
