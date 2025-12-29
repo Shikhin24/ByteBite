@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Item, Restaurant, User
+from .models import Cart, Item, Restaurant, User
 
 def index(request):
     context = {
@@ -67,7 +67,8 @@ def signin(request):
 
             request.session['is_admin'] = False
             request.session['username'] = user.username
-            return redirect('/show_restaurant')
+
+            return redirect('customer_home')
 
         except User.DoesNotExist:
             request.session['login_error'] = 'Invalid e-mail or password'
@@ -86,6 +87,23 @@ def admin_home(request):
     }
 
     return render(request, 'admin_home.html', context)
+
+def customer_home(request):
+    if not request.session.get('username'):
+        return redirect('/')
+
+    restaurantList = Restaurant.objects.all()
+    username = request.session.get('username')
+
+    return render(
+        request,
+        'customer_home.html',
+        {
+            'restaurantList': restaurantList,
+            'username': username
+        }
+    )
+
         
 def open_add_restaurant(request):
     return render(request, 'add_restaurants.html')
@@ -198,3 +216,26 @@ def delete_restaurant(request, restaurant_id):
     restaurantList = Restaurant.objects.all()
     return render(request, 'show_restaurants.html', {"restaurantList" : restaurantList})
         
+def add_to_cart(request, item_id):
+    if not request.session.get('username'):
+        return redirect('/')
+
+    username = request.session.get('username')
+    customer = User.objects.get(username=username)
+    item = Item.objects.get(id=item_id)
+
+    cart, created = Cart.objects.get_or_create(customer=customer)
+    cart.items.add(item)
+
+    return redirect(request.META.get('HTTP_REFERER'))
+
+def view_cart(request):
+    if not request.session.get('username'):
+        return redirect('/')
+
+    username = request.session.get('username')
+    customer = User.objects.get(username=username)
+
+    cart = Cart.objects.filter(customer=customer).first()
+
+    return render(request, 'cart.html', {'cart': cart})

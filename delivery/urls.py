@@ -8,6 +8,7 @@ urlpatterns = [
     path('signup', views.signup, name='signup'),
     path('signin', views.signin, name='signin'),
     path('admin_home/', views.admin_home, name='admin_home'),
+    path('customer/', views.customer_home, name='customer_home'),
     path('open_add_restaurant', views.open_add_restaurant, name='open_add_restaurant'),
     path('add_restaurant', views.add_restaurant, name='add_restaurant'),
     path('show_restaurant', views.show_restaurant, name='show_restaurant'),
@@ -36,5 +37,10 @@ urlpatterns = [
         views.delete_restaurant,
         name='delete_restaurant'
     ),
+    path('add_to_cart/<int:item_id>/',
+        views.add_to_cart,
+        name='add_to_cart'
+    ),
+    path('cart/', views.view_cart, name='view_cart'),
     
 ]

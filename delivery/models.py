@@ -30,3 +30,11 @@ class Item(models.Model):
     
     def __str__(self):
         return self.name
+    
+class Cart(models.Model):
+    customer = models.ForeignKey(User, on_delete= models.CASCADE, related_name="cart")
+    items = models.ManyToManyField("Item", related_name="carts")
+    
+    def total_price(self):
+        return sum(item.price for item in self.items.all())
+    

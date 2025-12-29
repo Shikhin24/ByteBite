@@ -1,34 +1,41 @@
 {% extends "base.html" %}
 {% block title %}{{ restaurant.name }} Menu{% endblock %}
 {% block content %}
-    <h2>{{ restaurant.name }} Menu</h2>
+<h2>{{ restaurant.name }} Menu</h2>
 
-    {% if items %}
-    <table class="data-table">
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-        <th>Price</th>
-        <th>Type</th>
-        <th>Image</th>
-      </tr>
+{% if items %}
+<table class="data-table">
+  <tr>
+    <th>Name</th>
+    <th>Description</th>
+    <th>Price</th>
+    <th>Type</th>
+    <th>Image</th>
+  </tr>
 
-      {% for item in items %}
-      <tr>
-        <td>{{ item.name }}</td>
-        <td>{{ item.description }}</td>
-        <td>₹{{ item.price }}</td>
-        <td>{% if item.nonVeg %} Non-Veg {% else %} Veg {% endif %}</td>
-        <td>
-          <img src="{{ item.picture }}" alt="{{ item.name }}" width="100" />
-        </td>
-      </tr>
-      {% endfor %}
-    </table>
-    {% else %}
-    <p>No menu available.</p>
-    {% endif %}
+  {% for item in items %}
+  <tr>
+    <td>{{ item.name }}</td>
+    <td>{{ item.description }}</td>
+    <td>₹{{ item.price }}</td>
+    <td>{% if item.nonVeg %} Non-Veg {% else %} Veg {% endif %}</td>
+    <td>
+      <img src="{{ item.picture }}" alt="{{ item.name }}" width="100" />
+    </td>
+    <td>
+      <a href="{% url 'add_to_cart' item.id %}">
+        Add to cart
+      </a>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+<br>
+<a href="{% url 'view_cart' %}">Go to Cart</a>
+{% else %}
+<p>No menu available.</p>
+{% endif %}
 
-    <br />
-    <a href="{% url 'show_restaurant' %}">Back to Restaurants</a>
+<br />
+<a href="{% url 'customer_home' %}">Back to Restaurants</a>
 {% endblock %}

@@ -81,6 +81,10 @@ body {
   color: var(--text);
 }
 
+button {
+  border-radius: 0;
+}
+
 /* ===============================
    LAYOUT
 ================================ */
@@ -185,8 +189,9 @@ body {
 }
 
 label {
-  margin-top: 12px;
-  font-size: 12px;
+  margin-top: 10px;
+  font-size: 13px;
+  font-weight: 600;
   letter-spacing: 0.08em;
   color: var(--text-muted);
 }
@@ -208,7 +213,7 @@ textarea {
 input:focus,
 textarea:focus {
   outline: none;
-  border-color: #777;
+  border-color: var(--text);
 }
 
 /* ===============================
@@ -243,6 +248,10 @@ textarea:focus {
   right: 12px;
   transform: translateY(-50%);
   cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .toggle-password svg {
@@ -538,4 +547,78 @@ textarea:focus {
   margin-left: 6px;
   font-size: 12px;
   color: var(--text-muted);
+}
+
+/* FORCE admin header links styling */
+.admin-topbar .admin-links a {
+  all: unset;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-left: 16px;
+}
+
+.admin-topbar .admin-links a:hover {
+  color: var(--text);
+}
+
+/* ===============================
+   ADD RESTAURANT PAGE
+================================ */
+
+/* Card sizing */
+.admin-layout .card {
+  max-width: 420px;
+}
+
+/* Title & description */
+.card h2 {
+  margin-bottom: 4px;
+}
+
+.card .muted {
+  display: inline-block;
+  margin-top: 18px;
+  margin-bottom: 14px;
+  font-size: 15px;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+input[type="number"] {
+  font-weight: 600;
+  appearance: textfield;
+}
+
+/* Form layout */
+.card form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Button styling */
+.card form button:not(.toggle-password) {
+  height: 42px;
+  margin-top: 30px;
+  font-size: 15px;
+  letter-spacing: 0.02em;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  background: var(--button-bg);
+  color: var(--button-text);
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.card form button:not(.toggle-password):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
+}
+
+.card form button:not(.toggle-password):active {
+  transform: translateY(0);
+  box-shadow: none;
 }
