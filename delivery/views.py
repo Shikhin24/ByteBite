@@ -1,6 +1,6 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Cart, Item, Restaurant, User
+from .models import Cart, CartItem, Item, Restaurant, User
 
 def index(request):
     context = {
@@ -179,7 +179,32 @@ def view_menu(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, id=restaurant_id)
     items = Item.objects.filter(restaurant=restaurant)
 
-    return render(request, 'view_menu.html', {'restaurant': restaurant,'items': items})
+    cart_item_ids = []
+    cart_count = 0
+
+    if request.session.get('username'):
+        user = User.objects.get(username=request.session['username'])
+        cart = Cart.objects.filter(customer=user).first()
+
+        if cart:
+            # IDs of items already in cart
+            cart_item_ids = list(
+                cart.cart_items.values_list('item_id', flat=True)
+            )
+
+            # total quantity for badge
+            cart_count = sum(
+                ci.quantity for ci in cart.cart_items.all()
+            )
+
+    return render(request, 'view_menu.html', {
+        'restaurant': restaurant,
+        'items': items,
+        'cart_item_ids': cart_item_ids,
+        'cart_count': cart_count
+    })
+
+
 
 def open_update_restaurant(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, id=restaurant_id)
@@ -215,27 +240,89 @@ def delete_restaurant(request, restaurant_id):
     
     restaurantList = Restaurant.objects.all()
     return render(request, 'show_restaurants.html', {"restaurantList" : restaurantList})
-        
+
 def add_to_cart(request, item_id):
-    if not request.session.get('username'):
-        return redirect('/')
+    if request.method == 'POST':
+        user = User.objects.get(username=request.session['username'])
+        item = Item.objects.get(id=item_id)
 
-    username = request.session.get('username')
-    customer = User.objects.get(username=username)
-    item = Item.objects.get(id=item_id)
+        cart, _ = Cart.objects.get_or_create(customer=user)
 
-    cart, created = Cart.objects.get_or_create(customer=customer)
-    cart.items.add(item)
+        cart_item, created = CartItem.objects.get_or_create(
+            cart=cart,
+            item=item
+        )
 
-    return redirect(request.META.get('HTTP_REFERER'))
+        if not created:
+            cart_item.quantity += 1
+            cart_item.save()
+
+        cart_count = sum(ci.quantity for ci in cart.cart_items.all())
+
+        return JsonResponse({
+            'status': 'added',
+            'cart_count': cart_count
+        })
+
+
+    
+def remove_from_cart(request, item_id):
+    if request.method == 'POST':
+        user = User.objects.get(username=request.session['username'])
+        cart = Cart.objects.get(customer=user)
+
+        CartItem.objects.filter(cart=cart, item_id=item_id).delete()
+
+        total_qty = sum(ci.quantity for ci in cart.cart_items.all())
+        total_price = cart.total_price()
+
+        return JsonResponse({
+            'total_qty': total_qty,
+            'total_price': total_price
+        })
+
+
+
 
 def view_cart(request):
     if not request.session.get('username'):
         return redirect('/')
 
-    username = request.session.get('username')
-    customer = User.objects.get(username=username)
+    user = User.objects.get(username=request.session['username'])
+    cart = Cart.objects.filter(customer=user).first()
 
-    cart = Cart.objects.filter(customer=customer).first()
+    total_quantity = 0
+    if cart:
+        total_quantity = sum(ci.quantity for ci in cart.cart_items.all())
 
-    return render(request, 'cart.html', {'cart': cart})
+    return render(request, 'cart.html', {
+        'cart': cart,
+        'total_quantity': total_quantity
+    })
+
+def update_quantity(request, item_id, action):
+    if request.method == 'POST':
+        user = User.objects.get(username=request.session['username'])
+        cart = Cart.objects.get(customer=user)
+        cart_item = CartItem.objects.get(cart=cart, item_id=item_id)
+
+        if action == 'inc':
+            cart_item.quantity += 1
+        elif action == 'dec':
+            cart_item.quantity -= 1
+
+        if cart_item.quantity <= 0:
+            cart_item.delete()
+        else:
+            cart_item.save()
+
+        total_qty = sum(ci.quantity for ci in cart.cart_items.all())
+        total_price = cart.total_price()
+
+        return JsonResponse({
+            'quantity': cart_item.quantity if cart_item.pk else 0,
+            'total_qty': total_qty,
+            'total_price': total_price
+        })
+
+

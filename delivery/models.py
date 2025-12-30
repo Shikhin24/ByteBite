@@ -32,9 +32,22 @@ class Item(models.Model):
         return self.name
     
 class Cart(models.Model):
-    customer = models.ForeignKey(User, on_delete= models.CASCADE, related_name="cart")
-    items = models.ManyToManyField("Item", related_name="carts")
-    
+    customer = models.ForeignKey(User, on_delete=models.CASCADE)
+
     def total_price(self):
-        return sum(item.price for item in self.items.all())
+        return sum(ci.item.price * ci.quantity for ci in self.cart_items.all())
+
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(
+        Cart,
+        related_name="cart_items",
+        on_delete=models.CASCADE
+    )
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        unique_together = ('cart', 'item')
+
     

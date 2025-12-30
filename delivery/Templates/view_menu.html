@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}{{ restaurant.name }} Menu{% endblock %}
 {% block content %}
+{% csrf_token %}
 <h2>{{ restaurant.name }} Menu</h2>
 
 {% if items %}
@@ -23,19 +24,59 @@
       <img src="{{ item.picture }}" alt="{{ item.name }}" width="100" />
     </td>
     <td>
-      <a href="{% url 'add_to_cart' item.id %}">
-        Add to cart
-      </a>
+      {% if item.id in cart_item_ids %}
+  <button disabled>Added ✓</button>
+{% else %}
+  <button class="add-to-cart-btn" data-item-id="{{ item.id }}">
+    Add to Cart
+  </button>
+{% endif %}
+
     </td>
   </tr>
   {% endfor %}
 </table>
 <br>
 <a href="{% url 'view_cart' %}">Go to Cart</a>
+<a href="{% url 'view_cart' %}">
+  🛒 Cart <span id="cart-count">{{ cart_count }}</span>
+</a>
 {% else %}
 <p>No menu available.</p>
 {% endif %}
 
 <br />
 <a href="{% url 'customer_home' %}">Back to Restaurants</a>
+<script>
+  const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+  document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+    button.addEventListener('click', () => {
+      const itemId = button.dataset.itemId;
+
+      fetch(`/add-to-cart/${itemId}/`, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': csrftoken,
+        },
+      })
+      .then(res => res.json())
+      .then(data => {
+        // disable button
+        button.innerText = "Added ✓";
+        button.disabled = true;
+
+        // LIVE cart count update
+        const cartCountEl = document.getElementById("cart-count");
+        if (cartCountEl) {
+          cartCountEl.innerText = data.cart_count;
+        }
+      })
+      .catch(err => console.error(err));
+    });
+  });
+</script>
+
 {% endblock %}
+
+
