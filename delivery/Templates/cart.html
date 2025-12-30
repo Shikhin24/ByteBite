@@ -31,6 +31,10 @@
   </td>
 </tr>
   {% endfor %}
+<form action="{% url 'checkout' username %}" method="get">
+  <input type="submit" value="CHECK OUT"/>
+</form>
+
 </table>
 
 <p>

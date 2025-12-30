@@ -119,3 +119,6 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
+
+RAZORPAY_KEY_ID = 'rzp_test_RxlpVuodqvvOA3'
+RAZORPAY_KEY_SECRET = 'H0cvYuLqtyjtsIrYlkd97phN'

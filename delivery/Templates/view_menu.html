@@ -60,22 +60,30 @@
           'X-CSRFToken': csrftoken,
         },
       })
-      .then(res => res.json())
-      .then(data => {
-        // disable button
+      .then(async response => {
+        const data = await response.json();
+
+        // 🔴 BACKEND BLOCKED (different restaurant)
+        if (!response.ok) {
+          alert(data.error);   // <-- THIS is Step 3
+          return;
+        }
+
+        // ✅ SUCCESS
         button.innerText = "Added ✓";
         button.disabled = true;
 
-        // LIVE cart count update
-        const cartCountEl = document.getElementById("cart-count");
-        if (cartCountEl) {
-          cartCountEl.innerText = data.cart_count;
+        // update cart count live
+        const cartCount = document.getElementById("cart-count");
+        if (cartCount) {
+          cartCount.innerText = data.cart_count;
         }
       })
       .catch(err => console.error(err));
     });
   });
 </script>
+
 
 {% endblock %}
 

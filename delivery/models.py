@@ -33,6 +33,12 @@ class Item(models.Model):
     
 class Cart(models.Model):
     customer = models.ForeignKey(User, on_delete=models.CASCADE)
+    restaurant = models.ForeignKey(
+        Restaurant,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
 
     def total_price(self):
         return sum(ci.item.price * ci.quantity for ci in self.cart_items.all())

@@ -3,6 +3,14 @@
 {% block content %}
 
 <nav class="top-nav">
+<div style="display:flex; justify-content: space-between; align-items:center;">
+  <h2>Welcome {{ username }}</h2>
+
+  <a href="{% url 'view_cart' %}">
+    🛒 Cart
+  </a>
+</div>
+
 <h2>Welcome {{ username }}</h2>
 
     <table class="data-table">

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Payment{% endblock %}
+{% block content %}
+
+<h2>Confirm Payment</h2>
+
+<p><strong>Total Amount:</strong> ₹{{ total_price|floatformat:2 }}</p>
+
+<button id="pay-btn">Pay with Razorpay</button>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+  var options = {
+    "key": "{{ razorpay_key }}",
+    "amount": "{{ total_price|floatformat:0 }}00",
+    "currency": "INR",
+    "name": "ByteBite",
+    "description": "Order Payment",
+
+    "handler": function (response) {
+      fetch("/payment-success/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        credentials: "same-origin", 
+        body: JSON.stringify(response)
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === "success") {
+            alert("Payment Successful 🎉");
+            window.location.href = "/customer/";
+          } else {
+            alert("Payment verification failed");
+          }
+        })
+        .catch(() => {
+          alert("Server error after payment");
+        });
+    },
+
+    "prefill": {
+      "name": "{{ username }}",
+      "email": "customer@example.com",
+      "contact": "9999999999"
+    },
+
+    "theme": {
+      "color": "#528FF0"
+    }
+  };
+
+  var rzp = new Razorpay(options);
+
+  document.getElementById("pay-btn").onclick = function (e) {
+    rzp.open();
+    e.preventDefault();
+  };
+</script>
+
+{% endblock %}

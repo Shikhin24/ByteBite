@@ -1,5 +1,9 @@
+import json
+from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
+import razorpay
 from .models import Cart, CartItem, Item, Restaurant, User
 
 def index(request):
@@ -245,8 +249,20 @@ def add_to_cart(request, item_id):
     if request.method == 'POST':
         user = User.objects.get(username=request.session['username'])
         item = Item.objects.get(id=item_id)
+        item_restaurant = item.restaurant
 
-        cart, _ = Cart.objects.get_or_create(customer=user)
+        cart, created = Cart.objects.get_or_create(customer=user)
+
+        # 🔴 Restaurant check
+        if cart.restaurant and cart.restaurant != item_restaurant:
+            return JsonResponse({
+                'error': 'You cannot add items from multiple restaurants.'
+            }, status=400)
+
+        # First item → lock restaurant
+        if not cart.restaurant:
+            cart.restaurant = item_restaurant
+            cart.save()
 
         cart_item, created = CartItem.objects.get_or_create(
             cart=cart,
@@ -263,7 +279,6 @@ def add_to_cart(request, item_id):
             'status': 'added',
             'cart_count': cart_count
         })
-
 
     
 def remove_from_cart(request, item_id):
@@ -282,13 +297,12 @@ def remove_from_cart(request, item_id):
         })
 
 
-
-
 def view_cart(request):
     if not request.session.get('username'):
         return redirect('/')
 
-    user = User.objects.get(username=request.session['username'])
+    username = request.session['username']
+    user = User.objects.get(username=username)
     cart = Cart.objects.filter(customer=user).first()
 
     total_quantity = 0
@@ -297,8 +311,10 @@ def view_cart(request):
 
     return render(request, 'cart.html', {
         'cart': cart,
-        'total_quantity': total_quantity
+        'total_quantity': total_quantity,
+        'username': username, 
     })
+
 
 def update_quantity(request, item_id, action):
     if request.method == 'POST':
@@ -324,5 +340,52 @@ def update_quantity(request, item_id, action):
             'total_qty': total_qty,
             'total_price': total_price
         })
+        
+def checkout(request, username):
+    customer = get_object_or_404(User, username=username)
+    cart = Cart.objects.filter(customer=customer).first()
+
+    if not cart:
+        return redirect('view_cart')
+
+    return render(request, "payment.html", {
+        "total_price": cart.total_price(),
+        "username": username,
+        "razorpay_key": settings.RAZORPAY_KEY_ID
+    })
+
+
+    
+razorpay_client = razorpay.Client(
+    auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET)
+)
+
+@csrf_exempt
+def payment_success(request):
+    try:
+        data = json.loads(request.body)
+
+        # OPTIONAL: verify signature (skip if using minimal flow)
+        # razorpay_client.utility.verify_payment_signature(data)
+
+        username = request.session.get('username')
+        if not username:
+            return JsonResponse({"status": "failed"})
+
+        user = User.objects.get(username=username)
+        cart = Cart.objects.filter(customer=user).first()
+
+        if cart:
+            cart.cart_items.all().delete()
+            cart.restaurant = None
+            cart.save()
+
+        return JsonResponse({"status": "success"})
+
+    except Exception as e:
+        return JsonResponse({"status": "failed"})
+
+
+
 
 
