@@ -16,6 +16,7 @@ class Restaurant(models.Model):
     picture = models.URLField()
     cuisine = models.CharField(max_length=200)
     rating = models.FloatField()
+    location_url = models.URLField(blank=True, null=True)
     
     def __str__(self):
         return self.name

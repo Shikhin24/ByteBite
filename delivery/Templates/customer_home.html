@@ -2,43 +2,141 @@
 {% block title %}Customer page{% endblock %}
 {% block content %}
 
-<nav class="top-nav">
-<div style="display:flex; justify-content: space-between; align-items:center;">
-  <h2>Welcome {{ username }}</h2>
+<div class="page-container">
 
-  <a href="{% url 'view_cart' %}">
-    🛒 Cart
+  <div class="customer-topbar">
+    <div>
+      <h1>Welcome, {{ username }}</h1>
+      <p class="muted">Choose a restaurant to start ordering</p>
+    </div>
+
+    <div class="top-right">
+  <input
+    type="text"
+    id="restaurant-search"
+    placeholder="Search restaurants..."
+  />
+
+  <select id="cuisine-filter">
+    <option value="all">All Cuisines</option>
+    <option value="burger">Burger</option>
+    <option value="vegetarian">Vegetarian</option>
+    <option value="biryani">Biryani</option>
+    <option value="chinese">Chinese</option>
+  </select>
+
+  <select id="rating-filter">
+    <option value="0">All Ratings</option>
+    <option value="4">4★ & above</option>
+    <option value="4.5">4.5★ & above</option>
+  </select>
+
+  <a href="{% url 'view_cart' %}" class="cart-btn">
+    🛒 Cart <span id="cart-count">{{ cart_count }}</span>
   </a>
 </div>
 
-<h2>Welcome {{ username }}</h2>
+  </div>
 
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Restaurant name</th>
-          <th>Picture</th>
-          <th>Cuisine</th>
-          <th>Rating</th>
-          <th>Operations</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for r in restaurantList %}
-        <tr>
-          <td>{{ r.name }}</td>
-          <td>
-            <img src="{{r.picture}}" />
-          </td>
-          <td>{{r.cuisine}}</td>
-          <td>{{r.rating}}</td>
-          <td>
-            <a href="{% url 'view_menu' r.id%}">View Menu</a>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </nav>
+  <div class="restaurant-grid">
+    {% for r in restaurantList %}
+    <div class="restaurant-card" data-url="{% url 'view_menu' r.id %}">
+      <div class="restaurant-image">
+        <img src="{{ r.picture }}" alt="{{ r.name }}">
+      </div>
+
+      <div class="restaurant-body">
+        <h3>{{ r.name }}</h3>
+
+        <div class="meta">
+          <span class="pill">{{ r.cuisine }}</span>
+          <span class="rating">⭐ {{ r.rating }}</span>
+        </div>
+
+        <div class="card-actions">
+  {% if r.location_url %}
+    <a
+      href="{{ r.location_url }}"
+      class="btn ghost"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      📍 Location
+    </a>
+  {% else %}
+    <span class="muted" style="font-size:13px;">Location not available</span>
+  {% endif %}
+</div>
+
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+</div>
+
+<script>
+  window.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("restaurant-search").value = "";
+    document.getElementById("cuisine-filter").value = "all";
+    document.getElementById("rating-filter").value = "0";
+  });
+</script>
+
+
+<script>
+  const searchInput = document.getElementById("restaurant-search");
+  const cuisineFilter = document.getElementById("cuisine-filter");
+  const ratingFilter = document.getElementById("rating-filter");
+
+  const restaurantCards = document.querySelectorAll(".restaurant-card");
+
+  function filterRestaurants() {
+    const searchText = searchInput.value.toLowerCase();
+    const cuisineValue = cuisineFilter.value.toLowerCase();
+    const minRating = parseFloat(ratingFilter.value);
+
+    restaurantCards.forEach(card => {
+      const name = card.querySelector("h3").innerText.toLowerCase();
+      const cuisine = card.querySelector(".pill").innerText.toLowerCase();
+      const ratingText = card.querySelector(".rating").innerText;
+      const rating = parseFloat(ratingText.replace("⭐", "").trim());
+
+      const matchesSearch =
+        name.includes(searchText) || cuisine.includes(searchText);
+
+      const matchesCuisine =
+        cuisineValue === "all" || cuisine.includes(cuisineValue);
+
+      const matchesRating =
+        rating >= minRating;
+
+      card.style.display =
+        matchesSearch && matchesCuisine && matchesRating
+          ? "block"
+          : "none";
+    });
+  }
+
+  searchInput.addEventListener("input", filterRestaurants);
+  cuisineFilter.addEventListener("change", filterRestaurants);
+  ratingFilter.addEventListener("change", filterRestaurants);
+</script>
+
+<script>
+  document.querySelectorAll(".restaurant-card").forEach(card => {
+    card.addEventListener("click", (e) => {
+      // If user clicked a button or link, let it handle itself
+      if (e.target.closest("a") || e.target.closest("button")) return;
+
+
+      const url = card.dataset.url;
+      if (url) {
+        window.location.href = url;
+      }
+    });
+  });
+</script>
+
 
 {% endblock %}

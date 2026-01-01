@@ -2,51 +2,68 @@
 {% block title %}{{ restaurant.name }} Menu{% endblock %}
 {% block content %}
 {% csrf_token %}
-<h2>{{ restaurant.name }} Menu</h2>
 
-{% if items %}
-<table class="data-table">
-  <tr>
-    <th>Name</th>
-    <th>Description</th>
-    <th>Price</th>
-    <th>Type</th>
-    <th>Image</th>
-  </tr>
+<div class="menu-page">
 
-  {% for item in items %}
-  <tr>
-    <td>{{ item.name }}</td>
-    <td>{{ item.description }}</td>
-    <td>₹{{ item.price }}</td>
-    <td>{% if item.nonVeg %} Non-Veg {% else %} Veg {% endif %}</td>
-    <td>
-      <img src="{{ item.picture }}" alt="{{ item.name }}" width="100" />
-    </td>
-    <td>
-      {% if item.id in cart_item_ids %}
-  <button disabled>Added ✓</button>
-{% else %}
-  <button class="add-to-cart-btn" data-item-id="{{ item.id }}">
-    Add to Cart
-  </button>
-{% endif %}
+  <div class="menu-topbar">
+    <div class="menu-title">
+      <h2>{{ restaurant.name }}</h2>
+      <p class="muted">Browse and add items to your cart</p>
+    </div>
 
-    </td>
-  </tr>
-  {% endfor %}
-</table>
-<br>
-<a href="{% url 'view_cart' %}">Go to Cart</a>
-<a href="{% url 'view_cart' %}">
-  🛒 Cart <span id="cart-count">{{ cart_count }}</span>
-</a>
-{% else %}
-<p>No menu available.</p>
-{% endif %}
+    <div class="menu-tools">
+      <input type="text" id="menu-search" placeholder="Search food..." />
+      
+<select id="menu-filter">
+  <option value="all">All</option>
+  <option value="veg">Veg</option>
+  <option value="nonveg">Non-Veg</option>
+</select>
+      <a href="{% url 'view_cart' %}" class="cart-btn">
+        🛒 <span id="cart-count">{{ cart_count }}</span>
+      </a>
+    </div>
+  </div>
 
-<br />
-<a href="{% url 'customer_home' %}">Back to Restaurants</a>
+  <div class="menu-grid">
+    {% for item in items %}
+    <div class="menu-card">
+
+      <div class="menu-image">
+        <img src="{{ item.picture }}" alt="{{ item.name }}">
+      </div>
+
+      <div class="menu-body">
+        <h4>{{ item.name }}</h4>
+        <p class="menu-desc">{{ item.description }}</p>
+
+        <div class="menu-meta">
+          <span>₹{{ item.price }}</span>
+          {% if item.nonVeg %}
+            <span class="type nonveg">Non-Veg</span>
+          {% else %}
+            <span class="type veg">Veg</span>
+          {% endif %}
+        </div>
+
+        <div class="menu-actions">
+          {% if item.id in cart_item_ids %}
+            <button class="btn ghost" disabled>Added ✓</button>
+          {% else %}
+            <button class="btn add-to-cart-btn" data-item-id="{{ item.id }}">
+              Add to Cart
+            </button>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+    {% endfor %}
+  </div>
+
+</div>
+
+
 <script>
   const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
@@ -83,6 +100,36 @@
     });
   });
 </script>
+
+<script>
+  const menuSearch = document.getElementById("menu-search");
+  const menuFilter = document.getElementById("menu-filter");
+  const menuCards = document.querySelectorAll(".menu-card");
+
+  function filterMenu() {
+    const searchText = menuSearch.value.toLowerCase();
+    const filterValue = menuFilter.value;
+
+    menuCards.forEach(card => {
+      const name = card.querySelector("h4").innerText.toLowerCase();
+      const isVeg = card.querySelector(".type.veg") !== null;
+      const isNonVeg = card.querySelector(".type.nonveg") !== null;
+
+      let matchesSearch = name.includes(searchText);
+      let matchesFilter =
+        filterValue === "all" ||
+        (filterValue === "veg" && isVeg) ||
+        (filterValue === "nonveg" && isNonVeg);
+
+      card.style.display =
+        matchesSearch && matchesFilter ? "flex" : "none";
+    });
+  }
+
+  menuSearch.addEventListener("input", filterMenu);
+  menuFilter.addEventListener("change", filterMenu);
+</script>
+
 
 
 {% endblock %}

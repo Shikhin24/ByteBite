@@ -124,6 +124,7 @@ def add_restaurant(request):
         picture = request.POST.get('picture')
         cuisine = request.POST.get('cuisine')
         rating = request.POST.get('rating')
+        location_url = request.POST.get('location_url')
         
         if not name or not picture or not cuisine or not rating:
             return HttpResponse("All fields are required")
@@ -138,6 +139,7 @@ def add_restaurant(request):
                 picture = picture,
                 cuisine = cuisine,
                 rating = rating,
+                location_url=location_url
             )
         AdminActivity.objects.create(action=f"Added restaurant: {name}")
         return HttpResponse("Successfully added")
@@ -241,11 +243,6 @@ def view_menu(request, restaurant_id):
         'cart_count': cart_count
     })
 
-
-def open_update_restaurant(request, restaurant_id):
-    restaurant = get_object_or_404(Restaurant, id=restaurant_id)
-    return render(request,'update_restaurant.html',{'restaurant': restaurant})
-
 def update_restaurant(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, id=restaurant_id)
 
@@ -254,6 +251,7 @@ def update_restaurant(request, restaurant_id):
         picture = request.POST.get('picture')
         cuisine = request.POST.get('cuisine')
         rating = request.POST.get('rating')
+        location_url = request.POST.get('location_url')
 
         if not all([name, picture, cuisine, rating]):
             return HttpResponse("All fields are required")
@@ -265,6 +263,7 @@ def update_restaurant(request, restaurant_id):
         restaurant.picture = picture
         restaurant.cuisine = cuisine
         restaurant.rating = rating
+        restaurant.location_url = location_url
 
         restaurant.save()
         AdminActivity.objects.create(

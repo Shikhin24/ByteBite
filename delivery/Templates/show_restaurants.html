@@ -7,7 +7,10 @@
   <!-- ================= TOP BAR ================= -->
   <div class="restaurant-topbar">
     <div class="top-left">
-      <h1>Restaurants Total: <strong id="restaurantCount">{{ restaurantList|length }}</strong></h1>
+      <h1>
+        Restaurants Total:
+        <strong id="restaurantCount">{{ restaurantList|length }}</strong>
+      </h1>
     </div>
 
     <div class="top-right">
@@ -27,7 +30,7 @@
     {% for r in restaurantList %}
     <div class="restaurant-card">
 
-      <!-- IMAGE → OPENS MENU -->
+      <!-- IMAGE -->
       <a href="{% url 'open_update_menu' r.id %}" class="restaurant-image">
         <img src="{{ r.picture }}" alt="{{ r.name }}">
       </a>
@@ -41,16 +44,16 @@
         </div>
 
         <div class="card-actions">
-          <!-- EDIT (MODAL) -->
+          <!-- EDIT -->
           <button
-            class="btn ghost"
-            onclick="openRestaurantEdit(
-              '{{ r.id }}',
-              '{{ r.name|escapejs }}',
-              '{{ r.picture }}',
-              '{{ r.cuisine|escapejs }}',
-              '{{ r.rating }}'
-            )"
+            type="button"
+            class="btn ghost edit-btn"
+            data-id="{{ r.id }}"
+            data-name="{{ r.name }}"
+            data-picture="{{ r.picture }}"
+            data-cuisine="{{ r.cuisine }}"
+            data-rating="{{ r.rating }}"
+            data-location="{{ r.location_url|default_if_none:'' }}"
           >
             Edit
           </button>
@@ -83,6 +86,14 @@
       <label>Image URL</label>
       <input type="url" name="picture" id="editPicture" required>
 
+      <label>Location</label>
+      <input
+        type="url"
+        name="location_url"
+        id="editLocation"
+        placeholder="https://maps.google.com/..."
+      >
+
       <label>Cuisine</label>
       <input type="text" name="cuisine" id="editCuisine" required>
 
@@ -95,12 +106,15 @@
 </div>
 
 <!-- ================= JS ================= -->
+
 <script>
-function openRestaurantEdit(id, name, picture, cuisine, rating) {
+/* OPEN EDIT MODAL */
+function openRestaurantEdit(id, name, picture, cuisine, rating, location) {
   document.getElementById("editName").value = name;
   document.getElementById("editPicture").value = picture;
   document.getElementById("editCuisine").value = cuisine;
   document.getElementById("editRating").value = rating;
+  document.getElementById("editLocation").value = location || "";
 
   document.getElementById("restaurantEditForm").action =
     `/restaurant/${id}/update_restaurant/`;
@@ -108,6 +122,21 @@ function openRestaurantEdit(id, name, picture, cuisine, rating) {
   document.getElementById("restaurantModal").classList.add("active");
 }
 
+/* EDIT BUTTON HANDLER */
+document.querySelectorAll(".edit-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    openRestaurantEdit(
+      btn.dataset.id,
+      btn.dataset.name,
+      btn.dataset.picture,
+      btn.dataset.cuisine,
+      btn.dataset.rating,
+      btn.dataset.location
+    );
+  });
+});
+
+/* CLOSE MODAL */
 document.getElementById("restaurantModal").addEventListener("click", e => {
   if (e.target.id === "restaurantModal") {
     e.target.classList.remove("active");
@@ -116,6 +145,7 @@ document.getElementById("restaurantModal").addEventListener("click", e => {
 </script>
 
 <script>
+/* FILTER */
 const searchInput = document.getElementById("searchInput");
 const cuisineFilter = document.getElementById("cuisineFilter");
 const cards = document.querySelectorAll(".restaurant-card");
