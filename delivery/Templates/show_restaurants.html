@@ -1,34 +1,154 @@
 {% extends "base.html" %}
 {% block title %}Restaurants list{% endblock %}
 {% block content %}
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Restaurant name</th>
-          <th>Picture</th>
-          <th>Cuisine</th>
-          <th>Rating</th>
-          <th>Operations</th>
-        </tr>
-      </thead>
-      <tbody>
+
+<div class="page-container">
+
+  <!-- ================= TOP BAR ================= -->
+  <div class="restaurant-topbar">
+    <div class="top-left">
+      <h1>Restaurants</h1>
+      <p class="muted">
+        Total: <strong id="restaurantCount">{{ restaurantList|length }}</strong>
+      </p>
+    </div>
+
+    <div class="top-right">
+      <input type="text" id="searchInput" placeholder="Search restaurants..." />
+
+      <select id="cuisineFilter">
+        <option value="">All cuisines</option>
         {% for r in restaurantList %}
-        <tr>
-          <td>{{ r.name }}</td>
-          <td>
-            <img src="{{r.picture}}" />
-          </td>
-          <td>{{r.cuisine}}</td>
-          <td>{{r.rating}}</td>
-          <td>
-            <a href="{% url 'open_update_restaurant' r.id %}">Update Restaurant</a>
-            <br />
-            <a href="{% url 'delete_restaurant' r.id %}">Delete Restaurant</a>
-            <br />
-            <a href="{% url 'open_update_menu' r.id %}">Update Menu</a>
-          </td>
-        </tr>
+          <option value="{{ r.cuisine }}">{{ r.cuisine }}</option>
         {% endfor %}
-      </tbody>
-    </table>
+      </select>
+    </div>
+  </div>
+
+  <!-- ================= RESTAURANT GRID ================= -->
+  <div class="restaurant-grid">
+    {% for r in restaurantList %}
+    <div class="restaurant-card">
+
+      <!-- IMAGE → OPENS MENU -->
+      <a href="{% url 'open_update_menu' r.id %}" class="restaurant-image">
+        <img src="{{ r.picture }}" alt="{{ r.name }}">
+      </a>
+
+      <div class="restaurant-body">
+        <h3>{{ r.name }}</h3>
+
+        <div class="meta">
+          <span class="pill">{{ r.cuisine }}</span>
+          <span class="rating">⭐ {{ r.rating }}</span>
+        </div>
+
+        <div class="card-actions">
+          <!-- EDIT (MODAL) -->
+          <button
+            class="btn ghost"
+            onclick="openRestaurantEdit(
+              '{{ r.id }}',
+              '{{ r.name|escapejs }}',
+              '{{ r.picture }}',
+              '{{ r.cuisine|escapejs }}',
+              '{{ r.rating }}'
+            )"
+          >
+            Edit
+          </button>
+
+          <a href="{% url 'delete_restaurant' r.id %}" class="btn danger">
+            Delete
+          </a>
+
+          <a href="{% url 'open_update_menu' r.id %}" class="btn ghost">
+            Menu
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- ================= EDIT RESTAURANT MODAL ================= -->
+<div class="modal-overlay" id="restaurantModal">
+  <div class="modal-card">
+    <h3>Edit Restaurant</h3>
+
+    <form method="POST" id="restaurantEditForm">
+      {% csrf_token %}
+
+      <label>Name</label>
+      <input type="text" name="name" id="editName" required>
+
+      <label>Image URL</label>
+      <input type="url" name="picture" id="editPicture" required>
+
+      <label>Cuisine</label>
+      <input type="text" name="cuisine" id="editCuisine" required>
+
+      <label>Rating</label>
+      <input type="number" step="0.1" name="rating" id="editRating" required>
+
+      <button type="submit">Update Restaurant</button>
+    </form>
+  </div>
+</div>
+
+<!-- ================= JS ================= -->
+<script>
+function openRestaurantEdit(id, name, picture, cuisine, rating) {
+  document.getElementById("editName").value = name;
+  document.getElementById("editPicture").value = picture;
+  document.getElementById("editCuisine").value = cuisine;
+  document.getElementById("editRating").value = rating;
+
+  document.getElementById("restaurantEditForm").action =
+    `/restaurant/${id}/update_restaurant/`;
+
+  document.getElementById("restaurantModal").classList.add("active");
+}
+
+document.getElementById("restaurantModal").addEventListener("click", e => {
+  if (e.target.id === "restaurantModal") {
+    e.target.classList.remove("active");
+  }
+});
+</script>
+
+<script>
+const searchInput = document.getElementById("searchInput");
+const cuisineFilter = document.getElementById("cuisineFilter");
+const cards = document.querySelectorAll(".restaurant-card");
+const count = document.getElementById("restaurantCount");
+
+function filterRestaurants() {
+  let visible = 0;
+  const search = searchInput.value.toLowerCase();
+  const cuisine = cuisineFilter.value.toLowerCase();
+
+  cards.forEach(card => {
+    const name = card.querySelector("h3").innerText.toLowerCase();
+    const pill = card.querySelector(".pill").innerText.toLowerCase();
+
+    const matchSearch = name.includes(search);
+    const matchCuisine = !cuisine || pill === cuisine;
+
+    if (matchSearch && matchCuisine) {
+      card.style.display = "";
+      visible++;
+    } else {
+      card.style.display = "none";
+    }
+  });
+
+  count.innerText = visible;
+}
+
+searchInput.addEventListener("input", filterRestaurants);
+cuisineFilter.addEventListener("change", filterRestaurants);
+</script>
+
 {% endblock %}

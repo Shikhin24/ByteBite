@@ -178,6 +178,30 @@ def update_menu(request, restaurant_id):
 
         return HttpResponse("Menu added successfully")
     
+def delete_menu_item(request, item_id):
+    if not request.session.get('is_admin'):
+        return redirect('/')
+
+    item = get_object_or_404(Item, id=item_id)
+    restaurant_id = item.restaurant.id
+    item.delete()
+    return redirect('open_update_menu', restaurant_id=restaurant_id)
+
+
+def edit_menu_item(request, item_id):
+    item = get_object_or_404(Item, id=item_id)
+
+    if request.method == 'POST':
+        item.name = request.POST.get('name')
+        item.description = request.POST.get('description')
+        item.picture = request.POST.get('picture')
+        item.price = request.POST.get('price')
+        item.nonVeg = request.POST.get('nonVeg') == 'on'
+        item.save()
+
+        return redirect('open_update_menu', restaurant_id=item.restaurant.id)
+
+
 
 def view_menu(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, id=restaurant_id)
@@ -384,8 +408,3 @@ def payment_success(request):
 
     except Exception as e:
         return JsonResponse({"status": "failed"})
-
-
-
-
-
