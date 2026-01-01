@@ -1,10 +1,11 @@
 import json
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import logout
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 import razorpay
-from .models import Cart, CartItem, Item, Restaurant, User
+from .models import AdminActivity, Cart, CartItem, Item, Restaurant, User
 
 def index(request):
     context = {
@@ -78,6 +79,10 @@ def signin(request):
             request.session['login_error'] = 'Invalid e-mail or password'
             return redirect('/')
         
+def logout_view(request):
+    request.session.flush()
+    return redirect('/')
+   
 def admin_home(request):
     if not request.session.get('is_admin'):
         return redirect('/')
@@ -88,6 +93,7 @@ def admin_home(request):
     context = {
         'restaurant_count': restaurant_count,
         'menu_count': menu_count,
+        "activities": AdminActivity.objects.order_by("-created_at")[:5],
     }
 
     return render(request, 'admin_home.html', context)
@@ -133,6 +139,7 @@ def add_restaurant(request):
                 cuisine = cuisine,
                 rating = rating,
             )
+        AdminActivity.objects.create(action=f"Added restaurant: {name}")
         return HttpResponse("Successfully added")
         #return render(request, 'admin_home.html')
         
@@ -175,7 +182,9 @@ def update_menu(request, restaurant_id):
             nonVeg=nonVeg,
             picture=picture
         )
-
+        AdminActivity.objects.create(
+            action=f"Added menu item: {name}"
+        )
         return HttpResponse("Menu added successfully")
     
 def delete_menu_item(request, item_id):
@@ -233,7 +242,6 @@ def view_menu(request, restaurant_id):
     })
 
 
-
 def open_update_restaurant(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, id=restaurant_id)
     return render(request,'update_restaurant.html',{'restaurant': restaurant})
@@ -259,11 +267,16 @@ def update_restaurant(request, restaurant_id):
         restaurant.rating = rating
 
         restaurant.save()
-    restaurantList = Restaurant.objects.all()
-    return render(request, 'show_restaurants.html', {"restaurantList" : restaurantList})
+        AdminActivity.objects.create(
+            action=f"Updated restaurant: {restaurant.name}"
+        )
+        
+    return redirect('show_restaurant')
 
 def delete_restaurant(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, id=restaurant_id)
+    AdminActivity.objects.create(
+    action=f"Deleted restaurant: {restaurant.name}")
     restaurant.delete()
     
     restaurantList = Restaurant.objects.all()
@@ -408,3 +421,6 @@ def payment_success(request):
 
     except Exception as e:
         return JsonResponse({"status": "failed"})
+    
+
+

@@ -14,8 +14,7 @@
 
         <div class="admin-topbar">
             <div class="admin-links">
-                <a href="/">Home</a>
-                <a href="/logout">Logout</a>
+                <a href="{% url 'logout' %}">Logout</a>
             </div>
         </div>
     </header>
@@ -59,19 +58,18 @@
             <div class="admin-panel">
                 <h4>Recent Activity</h4>
                 <ul>
+                    {% for activity in activities %}
                     <li>
-                        Added new restaurant
-                        <span class="time">- today</span>
+                        {{ activity.action }}
+                        <span class="time">
+                            - {{ activity.created_at|timesince }} ago
+                        </span>
                     </li>
-                    <li>
-                        Updated menu items
-                        <span class="time">- 2 days ago</span>
-                    </li>
-                    <li>
-                        Removed outdated listing
-                        <span class="time">- last week</span>
-                    </li>
+                    {% empty %}
+                    <li class="muted">No recent activity</li>
+                    {% endfor %}
                 </ul>
+
             </div>
         </aside>
 

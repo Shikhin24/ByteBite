@@ -1,7 +1,8 @@
 /* ===============================
    THEME VARIABLES
 ================================ */
-:root {
+:root,
+[data-theme="dark"] {
   --bg: #121212;
 
   --panel: #1c1c1c;
@@ -12,7 +13,7 @@
 
   --border: rgba(255, 255, 255, 0.08);
 
-  --input-bg: #121212;
+  --input-bg: #181818;
 
   --button-bg: linear-gradient(180deg, #ffffff, #dcdcdc);
   --button-text: #000;
@@ -100,7 +101,7 @@
   --text: #111827;
   --text-muted: #131414;
 
-  --input-bg: #e9edf2;
+  --input-bg: #ffffff;
 
   --border: rgba(0, 0, 0, 0.18);
 
@@ -135,7 +136,8 @@
 }
 
 body {
-  overflow: auto;
+  min-height: 100vh;
+  overflow-x: hidden;
   background: var(--page-gradient);
   color: var(--text);
 }
@@ -255,7 +257,7 @@ button {
 
 label {
   margin-top: var(--space-2);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   font-weight: 600;
   letter-spacing: var(--ls-wide);
   color: var(--text-muted);
@@ -725,17 +727,53 @@ input[type="number"] {
 /* Buttons */
 .btn {
   text-decoration: none;
-  border: 1px solid var(--border);
-  transition: all 0.2s ease;
   cursor: pointer;
+
   padding: var(--space-2) var(--space-3);
   font-size: var(--text-sm);
   font-weight: 600;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0.02)
+  );
+
+  border: 1px solid var(--border);
+  color: var(--text);
+
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
 }
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 6px 14px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.btn:active {
+  transform: translateY(0);
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.4),
+    inset 0 2px 4px rgba(0, 0, 0, 0.35);
+}
+
 
 .btn.ghost {
   color: var(--text);
-  background: transparent;
+    background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.04),
+    rgba(255, 255, 255, 0.01)
+  );
 }
 
 .btn.ghost:hover {
@@ -745,11 +783,22 @@ input[type="number"] {
 .btn.danger {
   color: #ff4d4d;
   border-color: rgba(255, 77, 77, 0.4);
+
+  background: linear-gradient(
+    180deg,
+    rgba(255, 77, 77, 0.12),
+    rgba(255, 77, 77, 0.04)
+  );
 }
 
 .btn.danger:hover {
-  background: rgba(255, 77, 77, 0.12);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 77, 77, 0.2),
+    rgba(255, 77, 77, 0.08)
+  );
 }
+
 
 /* ===============================
    RESTAURANT CARD GRID
@@ -760,7 +809,7 @@ input[type="number"] {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: var(--space-5);
-  overflow-y: auto;
+  overflow: visible;
   align-items: start;
   padding-bottom: var(--space-6);
 }
@@ -824,12 +873,13 @@ input[type="number"] {
 }
 
 .page-container {
-  height: 100%;
+  min-height: 100vh;
+  background: var(--page-gradient);
   max-width: 1400px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  padding: 24px 40px;
+  padding: 10px 5px;
 }
 
 @media (max-width: 768px) {
@@ -846,14 +896,14 @@ input[type="number"] {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 20px;
-  font-size: var(--text-3xl);
-  margin-bottom: var(--space-1);
-  line-height: var(--lh-tight);
+  gap: 16px;
+  margin-top: 10px;
+  margin-bottom: 20px;
 }
 
 .restaurant-topbar h1 {
-  font-size: 28px;
+  font-size: var(--text-2xl);
+  line-height: var(--lh-tight);
   margin-bottom: 4px;
 }
 
@@ -873,6 +923,7 @@ input[type="number"] {
 .top-right {
   display: flex;
   gap: 12px;
+  align-items: center;
 }
 
 .top-right input,
@@ -883,6 +934,12 @@ input[type="number"] {
   padding: var(--space-2) var(--space-3);
   font-size: var(--text-md);
   line-height: var(--lh-normal);
+}
+
+.top-right input:focus,
+.top-right select:focus {
+  border-color: var(--text);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.15);
 }
 
 .top-right input {
@@ -919,6 +976,7 @@ input[type="number"] {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: var(--space-5);
+  overflow: visible;
 }
 
 .menu-card {
@@ -1076,6 +1134,13 @@ input[type="number"] {
   line-height: var(--lh-normal);
 }
 
+.menu-tools input:focus,
+.menu-tools select:focus {
+  border-color: var(--text);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.15);
+}
+
+
 .menu-tools input {
   width: 220px;
 }
@@ -1131,3 +1196,10 @@ input[type="number"] {
   margin: 0 auto;
   padding: 10px 5px;
 }
+
+@media (max-width: 768px) {
+  .menu-page {
+    padding: 20px;
+  }
+}
+

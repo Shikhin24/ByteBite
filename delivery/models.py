@@ -56,4 +56,9 @@ class CartItem(models.Model):
     class Meta:
         unique_together = ('cart', 'item')
 
-    
+class AdminActivity(models.Model):
+    action = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.action

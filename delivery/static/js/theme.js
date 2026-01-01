@@ -1,28 +1,50 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const toggleBtn = document.getElementById("themeToggle");
+(function () {
+  function applyTheme() {
+    const theme = localStorage.getItem("theme") || "dark";
+    document.documentElement.setAttribute("data-theme", theme);
+    updateIcon(theme);
+  }
 
-  const current = document.documentElement.dataset.theme || "dark";
-  updateIcon(current);
+  function updateIcon(theme) {
+    const btn = document.getElementById("themeToggle");
+    if (!btn) return;
+    btn.textContent = theme === "light" ? "🌙" : "☀️";
+  }
 
-  toggleBtn.addEventListener("click", () => {
-    const html = document.documentElement;
-    const next = html.dataset.theme === "light" ? "dark" : "light";
+  function animateIcon(btn) {
+    btn.classList.remove("spin");
+    void btn.offsetWidth;
+    btn.classList.add("spin");
+  }
 
-    html.dataset.theme = next;
-    localStorage.setItem("theme", next);
+  // ✅ Normal page load
+  document.addEventListener("DOMContentLoaded", () => {
+    const toggleBtn = document.getElementById("themeToggle");
+    applyTheme();
 
-    animateIcon(toggleBtn);
-    updateIcon(next);
+    toggleBtn.addEventListener("click", () => {
+      const next =
+        document.documentElement.getAttribute("data-theme") === "light"
+          ? "dark"
+          : "light";
+
+      localStorage.setItem("theme", next);
+      document.documentElement.setAttribute("data-theme", next);
+      animateIcon(toggleBtn);
+      updateIcon(next);
+    });
   });
+
+window.addEventListener("pageshow", () => {
+  const html = document.documentElement;
+
+  const theme = localStorage.getItem("theme") || "dark";
+  html.setAttribute("data-theme", theme);
+
+  // 🔥 FORCE REPAINT (THIS IS THE KEY)
+  html.style.display = "none";
+  html.offsetHeight; // force reflow
+  html.style.display = "";
 });
 
-function updateIcon(theme) {
-  const btn = document.getElementById("themeToggle");
-  btn.textContent = theme === "light" ? "🌙" : "☀️";
-}
-
-function animateIcon(btn) {
-  btn.classList.remove("spin");
-  void btn.offsetWidth;
-  btn.classList.add("spin");
-}
+})();
