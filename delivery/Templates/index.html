@@ -28,7 +28,7 @@
 
       <!-- Sign in -->
       <div id="signinForm" class="auth-form {% if active_tab == 'signin' %}active{% endif %}">
-        <form action="{% url 'signin' %}" method="post" autocomplete="off">
+        <form action="{% url 'signin' %}" method="post">
           {% csrf_token %}
 
           {% if signup_success and active_tab == 'signin' %}
@@ -72,7 +72,7 @@
 
       <!-- Sign up -->
       <div id="signupForm" class="auth-form {% if active_tab == 'signup' %}active{% endif %}">
-        <form action="{% url 'signup' %}" method="post" autocomplete="off">
+        <form action="{% url 'signup' %}" method="post">
           {% csrf_token %}
 
           {% if signup_error %}
@@ -120,4 +120,14 @@
 </div>
 
 <script src="{% static 'js/auth.js' %}"></script>
+<script>
+  window.addEventListener("pageshow", () => {
+    const email = document.getElementById("signin-email");
+    const password = document.getElementById("signinPassword");
+
+    if (email) email.value = "";
+    if (password) password.value = "";
+  });
+</script>
+
 {% endblock %}

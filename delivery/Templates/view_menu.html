@@ -20,7 +20,7 @@
   <option value="nonveg">Non-Veg</option>
 </select>
       <a href="{% url 'view_cart' %}" class="cart-btn">
-        🛒 <span id="cart-count">{{ cart_count }}</span>
+        🛒 Cart <span id="cart-count">{{ cart_count }}</span>
       </a>
     </div>
   </div>
@@ -47,14 +47,18 @@
         </div>
 
         <div class="menu-actions">
-          {% if item.id in cart_item_ids %}
-            <button class="btn ghost" disabled>Added ✓</button>
-          {% else %}
-            <button class="btn add-to-cart-btn" data-item-id="{{ item.id }}">
-              Add to Cart
-            </button>
-          {% endif %}
-        </div>
+  <button
+    class="btn add-to-cart-btn {% if item.id in cart_item_ids %}danger{% endif %}"
+    data-item-id="{{ item.id }}"
+    data-state="{% if item.id in cart_item_ids %}added{% else %}add{% endif %}">
+    {% if item.id in cart_item_ids %}
+      Remove
+    {% else %}
+      Add to Cart
+    {% endif %}
+  </button>
+</div>
+
       </div>
 
     </div>
@@ -65,41 +69,53 @@
 
 
 <script>
-  const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-  document.querySelectorAll('.add-to-cart-btn').forEach(button => {
-    button.addEventListener('click', () => {
-      const itemId = button.dataset.itemId;
+document.querySelectorAll(".add-to-cart-btn").forEach(button => {
+  button.addEventListener("click", async () => {
+    const itemId = button.dataset.itemId;
+    const state = button.dataset.state;
 
-      fetch(`/add-to-cart/${itemId}/`, {
-        method: 'POST',
-        headers: {
-          'X-CSRFToken': csrftoken,
-        },
-      })
-      .then(async response => {
-        const data = await response.json();
+    // ADD TO CART
+    if (state === "add") {
+      const response = await fetch(`/add-to-cart/${itemId}/`, {
+        method: "POST",
+        headers: { "X-CSRFToken": csrftoken }
+      });
 
-        // 🔴 BACKEND BLOCKED (different restaurant)
-        if (!response.ok) {
-          alert(data.error);   // <-- THIS is Step 3
-          return;
-        }
+      const data = await response.json();
 
-        // ✅ SUCCESS
-        button.innerText = "Added ✓";
-        button.disabled = true;
+      if (!response.ok) {
+        alert(data.error);
+        return;
+      }
 
-        // update cart count live
-        const cartCount = document.getElementById("cart-count");
-        if (cartCount) {
-          cartCount.innerText = data.cart_count;
-        }
-      })
-      .catch(err => console.error(err));
-    });
+      button.textContent = "Remove";
+      button.dataset.state = "added";
+      button.classList.add("danger");
+
+      document.getElementById("cart-count").innerText = data.cart_count;
+    }
+
+    // REMOVE FROM CART
+    else {
+      const response = await fetch(`/remove-from-cart/${itemId}/`, {
+        method: "POST",
+        headers: { "X-CSRFToken": csrftoken }
+      });
+
+      const data = await response.json();
+
+      button.textContent = "Add to Cart";
+      button.dataset.state = "add";
+      button.classList.remove("danger");
+
+      document.getElementById("cart-count").innerText = data.total_qty;
+    }
   });
+});
 </script>
+
 
 <script>
   const menuSearch = document.getElementById("menu-search");

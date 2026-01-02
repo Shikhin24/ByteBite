@@ -53,20 +53,16 @@
           <span class="rating">⭐ {{ r.rating }}</span>
         </div>
 
-        <div class="card-actions">
+        <div class="location-row">
   {% if r.location_url %}
-    <a
-      href="{{ r.location_url }}"
-      class="btn ghost"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
+    <a href="{{ r.location_url }}" target="_blank" class="location-btn">
       📍 Location
     </a>
   {% else %}
-    <span class="muted" style="font-size:13px;">Location not available</span>
+    <span class="location-placeholder">Location not available</span>
   {% endif %}
 </div>
+
 
       </div>
     </div>

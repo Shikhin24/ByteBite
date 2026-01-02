@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 # Create your models here.
 class User(models.Model):
@@ -15,7 +16,7 @@ class Restaurant(models.Model):
     name = models.CharField(max_length=100, unique=True)
     picture = models.URLField()
     cuisine = models.CharField(max_length=200)
-    rating = models.FloatField()
+    rating = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(5)])
     location_url = models.URLField(blank=True, null=True)
     
     def __str__(self):

@@ -116,7 +116,12 @@ def customer_home(request):
 
         
 def open_add_restaurant(request):
-    return render(request, 'add_restaurants.html')
+    context = {
+        "restaurant_error": request.session.pop("restaurant_error", None),
+        "restaurant_success": request.session.pop("restaurant_success", None),
+    }
+    return render(request, 'add_restaurants.html', context)
+
 
 def add_restaurant(request):
     if request.method == 'POST':
@@ -125,31 +130,54 @@ def add_restaurant(request):
         cuisine = request.POST.get('cuisine')
         rating = request.POST.get('rating')
         location_url = request.POST.get('location_url')
-        
+
+        # validation
         if not name or not picture or not cuisine or not rating:
-            return HttpResponse("All fields are required")
-        
-        try:
-            Restaurant.objects.get(name=name)
-            return HttpResponse("Dulpicate restaurant")
-        
-        except:
-            Restaurant.objects.create(
-                name = name,
-                picture = picture,
-                cuisine = cuisine,
-                rating = rating,
-                location_url=location_url
-            )
+            request.session['restaurant_error'] = "All fields are required."
+            return redirect('open_add_restaurant')
+
+        rating = float(rating)
+        if rating < 0 or rating > 5:
+            request.session['restaurant_error'] = "Rating must be between 0 and 5."
+            return redirect('open_add_restaurant')
+
+        if Restaurant.objects.filter(name=name).exists():
+            request.session['restaurant_error'] = "Restaurant already exists."
+            return redirect('open_add_restaurant')
+
+        Restaurant.objects.create(
+            name=name,
+            picture=picture,
+            cuisine=cuisine,
+            rating=rating,
+            location_url=location_url
+        )
+
         AdminActivity.objects.create(action=f"Added restaurant: {name}")
-        return HttpResponse("Successfully added")
-        #return render(request, 'admin_home.html')
+
+        request.session['restaurant_success'] = "Restaurant added successfully!"
+        return redirect('open_add_restaurant')
+
         
 def show_restaurant(request):
     restaurantList = Restaurant.objects.all()
-    is_admin = request.session.get('is_admin', False)
 
-    return render(request,'show_restaurants.html',{'restaurantList': restaurantList,'is_admin': is_admin})
+    cuisines = (
+        Restaurant.objects
+        .values_list("cuisine", flat=True)
+        .distinct()
+        .order_by("cuisine")
+    )
+
+    return render(
+        request,
+        "show_restaurants.html",
+        {
+            "restaurantList": restaurantList,
+            "cuisines": cuisines,
+        }
+    )
+
 
 def open_update_menu(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, id=restaurant_id)
@@ -253,24 +281,36 @@ def update_restaurant(request, restaurant_id):
         rating = request.POST.get('rating')
         location_url = request.POST.get('location_url')
 
-        if not all([name, picture, cuisine, rating]):
-            return HttpResponse("All fields are required")
+        # required fields (rating checked separately)
+        if not name or not picture or not cuisine or rating is None:
+            request.session["restaurant_error"] = "All fields are required."
+            return redirect("show_restaurant")
 
-        if Item.objects.filter(name=name, restaurant=restaurant).exists():
-            return HttpResponse("Duplicate menu")
+        # rating validation
+        try:
+            rating = float(rating)
+        except (TypeError, ValueError):
+            request.session["restaurant_error"] = "Invalid rating value."
+            return redirect("show_restaurant")
 
+        if rating < 0 or rating > 5:
+            request.session["restaurant_error"] = "Rating must be between 0 and 5."
+            return redirect("show_restaurant")
+
+        # save
         restaurant.name = name
         restaurant.picture = picture
         restaurant.cuisine = cuisine
         restaurant.rating = rating
         restaurant.location_url = location_url
-
         restaurant.save()
+
         AdminActivity.objects.create(
             action=f"Updated restaurant: {restaurant.name}"
         )
-        
-    return redirect('show_restaurant')
+
+    return redirect("show_restaurant")
+
 
 def delete_restaurant(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, id=restaurant_id)
