@@ -3,56 +3,91 @@
 {% block content %}
 {% csrf_token %}
 
-<h2>My Cart</h2>
+<div class="cart-page">
 
-{% if cart and cart.cart_items.all %}
-<table class="data-table">
-  <tr>
-    <th>Item</th>
-    <th>Quantity</th>
-    <th>Price</th>
-    <th>Action</th>
-  </tr>
+  <div class="cart-header">
+    {% if cart.cart_items.all %}
+    <a href="{% url 'customer_home' %}" class="back-link">← Back to Restaurants</a>
+    <h2>My Cart</h2>
+  </div>
 
-  {% for ci in cart.cart_items.all %}
-<tr data-item-id="{{ ci.item.id }}">
-  <td>{{ ci.item.name }}</td>
+  <div class="cart-card">
 
-  <td>
-    <button class="qty-btn" data-action="dec">−</button>
-    <span class="qty">{{ ci.quantity }}</span>
-    <button class="qty-btn" data-action="inc">+</button>
-  </td>
+    <table class="data-table">
+      <tr>
+        <th>Item</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        <th>Action</th>
+      </tr>
 
-  <td class="price">₹{{ ci.item.price }}</td>
-
-  <td>
-    <button class="remove-btn" data-id="{{ ci.item.id }}">Remove</button>
-  </td>
-</tr>
-  {% endfor %}
-<button id="checkout-btn" class="btn primary">
-  CHECK OUT
-</button>
-
-</table>
-
-<p>
-  <strong>Total Items:</strong> <span id="total-qty">{{ total_quantity }}</span><br>
-  <strong>Total Price:</strong> ₹<span id="total-price">{{ cart.total_price }}</span>
-</p>
+      {% for ci in cart.cart_items.all %}
+      <tr data-item-id="{{ ci.item.id }}">
+        <td class="item-cell">
+  <img
+    src="{{ ci.item.picture }}"
+    alt="{{ ci.item.name }}"
+    class="cart-item-img"
+  />
+  <span class="item-name">{{ ci.item.name }}</span>
+</td>
 
 
-{% else %}
-<p>Your cart is empty.</p>
-{% endif %}
+        <td>
+          <button class="qty-btn" data-action="dec">−</button>
+          <span class="qty">{{ ci.quantity }}</span>
+          <button class="qty-btn" data-action="inc">+</button>
+        </td>
 
+        <td class="price">₹{{ ci.item.price }}</td>
 
-<a href="{% url 'customer_home' %}">Back to Restaurants</a>
+        <td>
+          <button class="btn danger remove-btn">Remove</button>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+
+    <!-- SUMMARY BAR -->
+    <div class="cart-summary">
+      <div class="summary-text">
+        <span>Total Items</span>
+        <strong id="total-qty">{{ total_quantity }}</strong>
+      </div>
+
+      <div class="summary-text">
+        <span>Total Amount</span>
+        <strong class="amount">
+  <span class="currency">₹</span>
+  <span id="total-price"> {{ cart.total_price }}</span>
+</strong>
+
+      </div>
+
+      <button id="checkout-btn" class="btn">
+        CHECK OUT
+      </button>
+    </div>
+  {% else %}
+    <div class="cart-empty">
+      <div class="empty-icon">🛒</div>
+      <h3>Your cart is feeling lonely</h3>
+      <p class="muted">Looks like you haven’t added anything yet.</p>
+
+      <a href="{% url 'customer_home' %}" class="btn">
+        Browse Restaurants
+      </a>
+    </div>
+  {% endif %}
+
+  </div>
+
+</div>
+
 
 <!-- CHECKOUT CONFIRM MODAL -->
 <div id="checkoutModal" class="modal-overlay">
-  <div class="modal-card">
+  <div class="modal-card checkout-confirm">
     <h3>Confirm Checkout</h3>
 
     <p class="muted">
@@ -66,7 +101,7 @@
       </div>
       <div>
         <span>Total Amount</span>
-        <strong>₹<span id="modal-total-price">{{ cart.total_price }}</span></strong>
+        <strong id="modal-total-price" class="amount"><span class="currency">₹</span>  {{ cart.total_price }}</strong>
       </div>
     </div>
 
@@ -77,7 +112,6 @@
   </div>
 </div>
 
-<!-- PAYMENT SUCCESS MODAL -->
 <!-- PAYMENT SUCCESS MODAL -->
 <div id="successModal" class="modal-overlay">
   <div class="modal-card success-card">
@@ -145,11 +179,6 @@ const options = {
       body: JSON.stringify(response)
     })
     .then(res => res.json())
-    .then(data => {
-      if (data.status === "success") {
-        showSuccessModal(); 
-      }
-    });
   },
 
   prefill: {
