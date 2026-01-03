@@ -1,50 +1,32 @@
 (function () {
-  function applyTheme() {
-    const theme = localStorage.getItem("theme") || "dark";
-    document.documentElement.setAttribute("data-theme", theme);
-    updateIcon(theme);
-  }
 
-  function updateIcon(theme) {
+  function setTheme(theme) {
+    document.documentElement.dataset.theme = theme;
+    localStorage.setItem("theme", theme);
+
     const btn = document.getElementById("themeToggle");
-    if (!btn) return;
-    btn.textContent = theme === "light" ? "🌙" : "☀️";
+    if (btn) btn.textContent = theme === "light" ? "🌙" : "☀️";
   }
 
-  function animateIcon(btn) {
-    btn.classList.remove("spin");
-    void btn.offsetWidth;
-    btn.classList.add("spin");
+  function syncTheme() {
+    const theme = localStorage.getItem("theme") || "dark";
+    document.documentElement.dataset.theme = theme;
   }
 
-  // ✅ Normal page load
+  // ✅ Runs on normal load
   document.addEventListener("DOMContentLoaded", () => {
+    syncTheme();
+
     const toggleBtn = document.getElementById("themeToggle");
-    applyTheme();
+    if (!toggleBtn) return;
 
     toggleBtn.addEventListener("click", () => {
-      const next =
-        document.documentElement.getAttribute("data-theme") === "light"
-          ? "dark"
-          : "light";
-
-      localStorage.setItem("theme", next);
-      document.documentElement.setAttribute("data-theme", next);
-      animateIcon(toggleBtn);
-      updateIcon(next);
+      const current = document.documentElement.dataset.theme;
+      setTheme(current === "dark" ? "light" : "dark");
     });
   });
 
-window.addEventListener("pageshow", () => {
-  const html = document.documentElement;
-
-  const theme = localStorage.getItem("theme") || "dark";
-  html.setAttribute("data-theme", theme);
-
-  // 🔥 FORCE REPAINT (THIS IS THE KEY)
-  html.style.display = "none";
-  html.offsetHeight; // force reflow
-  html.style.display = "";
-});
+  // ✅ Runs on back/forward cache restore
+  window.addEventListener("pageshow", syncTheme);
 
 })();

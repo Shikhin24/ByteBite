@@ -389,6 +389,7 @@ def view_cart(request):
         'cart': cart,
         'total_quantity': total_quantity,
         'username': username, 
+        'razorpay_key': settings.RAZORPAY_KEY_ID,
     })
 
 
@@ -461,5 +462,22 @@ def payment_success(request):
     except Exception as e:
         return JsonResponse({"status": "failed"})
     
+def cart_status(request):
+    if not request.session.get('username'):
+        return JsonResponse({"items": [], "total_qty": 0})
+
+    user = User.objects.get(username=request.session['username'])
+    cart = Cart.objects.filter(customer=user).first()
+
+    if not cart:
+        return JsonResponse({"items": [], "total_qty": 0})
+
+    item_ids = list(cart.cart_items.values_list("item_id", flat=True))
+    total_qty = sum(ci.quantity for ci in cart.cart_items.all())
+
+    return JsonResponse({
+        "items": item_ids,
+        "total_qty": total_qty
+    })
 
 

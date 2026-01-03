@@ -1142,6 +1142,47 @@ input[type="number"] {
    MODAL
 ================================ */
 
+.modal-card.center {
+  text-align: center;
+}
+
+.modal-card h3 {
+  font-size: var(--text-lg);
+  margin-bottom: var(--space-2);
+}
+
+.summary {
+  margin-top: var(--space-4);
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.summary div {
+  background: var(--panel-soft);
+  padding: var(--space-3);
+  flex: 1;
+  border: 1px solid var(--border);
+}
+
+.summary span {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: var(--space-5);
+}
+
+.success-timer {
+  margin-top: 20px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -1279,6 +1320,43 @@ input[type="number"] {
     padding: 20px;
   }
 }
+
+.success-card {
+  text-align: center;
+  padding: 32px;
+}
+
+.success-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 16px;
+
+  border-radius: 50%;
+  background: rgba(46, 204, 113, 0.15);
+  color: #2ecc71;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 28px;
+  font-weight: 700;
+  border: 1px solid rgba(46, 204, 113, 0.4);
+}
+
+.success-card h2 {
+  margin-bottom: 8px;
+}
+
+.success-actions {
+  margin-top: 24px;
+}
+
+.auto-redirect {
+  margin-top: 16px;
+  font-size: 13px;
+}
+
 
 /* ===============================
    CUSTOMER TOP BAR

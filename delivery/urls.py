@@ -43,6 +43,7 @@ path('menu/edit/<int:item_id>/', views.edit_menu_item, name='edit_menu_item'),
     path('update-quantity/<int:item_id>/<str:action>/', views.update_quantity, name='update_quantity'),
     path('checkout/<str:username>/', views.checkout, name='checkout'),
     path('payment-success/', views.payment_success, name='payment_success'),
+    path("cart/status/", views.cart_status, name="cart_status"),
 
     
 ]

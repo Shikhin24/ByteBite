@@ -50,10 +50,26 @@ document.addEventListener("DOMContentLoaded", () => {
         row.remove();
         document.getElementById('total-qty').innerText = data.total_qty;
         document.getElementById('total-price').innerText = data.total_price;
+
+        sessionStorage.setItem("cart_updated", "true");
       })
       .catch(err => console.error(err));
+      
     }
 
   });
 
 });
+
+window.addEventListener("beforeunload", () => {
+  sessionStorage.setItem("cart_updated", "true");
+});
+
+window.addEventListener("pageshow", () => {
+  if (sessionStorage.getItem("cart_updated")) {
+    syncMenuCart();
+    sessionStorage.removeItem("cart_updated");
+  }
+});
+
+

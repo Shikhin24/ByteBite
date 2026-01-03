@@ -146,6 +146,31 @@ document.querySelectorAll(".add-to-cart-btn").forEach(button => {
   menuFilter.addEventListener("change", filterMenu);
 </script>
 
+<script>
+async function syncMenuCart() {
+  const res = await fetch("/cart/status/");
+  const data = await res.json();
+
+  document.getElementById("cart-count").innerText = data.total_qty;
+
+  document.querySelectorAll(".add-to-cart-btn").forEach(btn => {
+    const id = parseInt(btn.dataset.itemId);
+
+    if (data.items.includes(id)) {
+      btn.textContent = "Remove";
+      btn.dataset.state = "added";
+      btn.classList.add("danger");
+    } else {
+      btn.textContent = "Add to Cart";
+      btn.dataset.state = "add";
+      btn.classList.remove("danger");
+    }
+  });
+}
+
+// 🔥 This fixes BACK button issue
+window.addEventListener("pageshow", syncMenuCart);
+</script>
 
 
 {% endblock %}

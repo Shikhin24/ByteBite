@@ -31,9 +31,9 @@
   </td>
 </tr>
   {% endfor %}
-<form action="{% url 'checkout' username %}" method="get">
-  <input type="submit" value="CHECK OUT"/>
-</form>
+<button id="checkout-btn" class="btn primary">
+  CHECK OUT
+</button>
 
 </table>
 
@@ -49,5 +49,142 @@
 
 
 <a href="{% url 'customer_home' %}">Back to Restaurants</a>
+
+<!-- CHECKOUT CONFIRM MODAL -->
+<div id="checkoutModal" class="modal-overlay">
+  <div class="modal-card">
+    <h3>Confirm Checkout</h3>
+
+    <p class="muted">
+      You are about to place an order with the following details:
+    </p>
+
+    <div class="summary">
+      <div>
+        <span>Total Items</span>
+        <strong id="modal-total-items">{{ total_quantity }}</strong>
+      </div>
+      <div>
+        <span>Total Amount</span>
+        <strong>₹<span id="modal-total-price">{{ cart.total_price }}</span></strong>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button id="cancelCheckout" class="btn ghost">Cancel</button>
+      <button id="confirmCheckout" class="btn">Proceed to Pay</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAYMENT SUCCESS MODAL -->
+<!-- PAYMENT SUCCESS MODAL -->
+<div id="successModal" class="modal-overlay">
+  <div class="modal-card success-card">
+    <div class="success-icon">✓</div>
+
+    <h2>Payment Successful</h2>
+    <p class="muted">
+      Thank you for your order.<br>
+      Your food will be prepared shortly.
+    </p>
+    <p class="auto-redirect muted">
+      Redirecting in <span id="redirectCounter">5</span> seconds
+    </p>
+
+
+    <div class="success-actions">
+      <a href="{% url 'customer_home' %}" class="btn">
+        Go to Home
+      </a>
+    </div>
+  </div>
+</div>
+
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+const checkoutBtn = document.getElementById("checkout-btn");
+const checkoutModal = document.getElementById("checkoutModal");
+const successModal = document.getElementById("successModal");
+
+const cancelBtn = document.getElementById("cancelCheckout");
+const confirmBtn = document.getElementById("confirmCheckout");
+
+// OPEN MODAL
+checkoutBtn.addEventListener("click", () => {
+  checkoutModal.classList.add("active");
+});
+
+// CLOSE MODAL
+cancelBtn.addEventListener("click", () => {
+  checkoutModal.classList.remove("active");
+});
+
+// RAZORPAY
+confirmBtn.addEventListener("click", () => {
+  checkoutModal.classList.remove("active");
+
+const options = {
+  key: "{{ razorpay_key }}",
+  amount: "{{ cart.total_price|floatformat:0 }}00",
+  currency: "INR",
+  name: "ByteBite",
+  description: "Order Payment",
+
+  handler: function (response) {
+
+    document.body.classList.add("payment-complete");
+    showSuccessModal();
+
+    fetch("/payment-success/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify(response)
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === "success") {
+        showSuccessModal(); 
+      }
+    });
+  },
+
+  prefill: {
+    name: "{{ username }}",
+    email: "customer@example.com",
+    contact: "9999999999"
+  },
+
+  theme: {
+    color: "#528FF0"
+  }
+};
+
+
+  const rzp = new Razorpay(options);
+  rzp.open();
+});
+
+function showSuccessModal() {
+  successModal.classList.add("active");
+
+  let seconds = 5;
+  const counter = document.getElementById("redirectCounter");
+
+  const timer = setInterval(() => {
+    seconds--;
+    counter.innerText = seconds;
+
+    if (seconds === 0) {
+      clearInterval(timer);
+      window.location.href = "{% url 'customer_home' %}";
+    }
+  }, 1000);
+}
+</script>
+
 
 {% endblock %}
