@@ -1,4 +1,6 @@
 import json
+from django.views.decorators.cache import never_cache
+from functools import wraps
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import logout
 from django.conf import settings
@@ -6,6 +8,24 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 import razorpay
 from .models import AdminActivity, Cart, CartItem, Item, Restaurant, User
+
+def admin_required(view_func):
+    @wraps(view_func)
+    def wrapper(request, *args, **kwargs):
+        if not request.session.get("is_admin"):
+            return redirect("/")
+        return view_func(request, *args, **kwargs)
+    return wrapper
+
+
+def customer_required(view_func):
+    @wraps(view_func)
+    def wrapper(request, *args, **kwargs):
+        if not request.session.get("username"):
+            return redirect("/")
+        return view_func(request, *args, **kwargs)
+    return wrapper
+
 
 def index(request):
     context = {
@@ -79,10 +99,16 @@ def signin(request):
             request.session['login_error'] = 'Invalid e-mail or password'
             return redirect('/')
         
+@never_cache
 def logout_view(request):
     request.session.flush()
-    return redirect('/')
-   
+    response = redirect("/")
+    response["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    return response
+
+
+@never_cache
+@admin_required
 def admin_home(request):
     if not request.session.get('is_admin'):
         return redirect('/')
@@ -98,7 +124,10 @@ def admin_home(request):
 
     return render(request, 'admin_home.html', context)
 
+@never_cache
+@customer_required
 def customer_home(request):
+    request.session.pop("payment_done", None)
     if not request.session.get('username'):
         return redirect('/')
 
@@ -114,7 +143,8 @@ def customer_home(request):
         }
     )
 
-        
+@never_cache
+@admin_required      
 def open_add_restaurant(request):
     context = {
         "restaurant_error": request.session.pop("restaurant_error", None),
@@ -122,7 +152,8 @@ def open_add_restaurant(request):
     }
     return render(request, 'add_restaurants.html', context)
 
-
+@never_cache
+@admin_required
 def add_restaurant(request):
     if request.method == 'POST':
         name = request.POST.get('name')
@@ -158,7 +189,8 @@ def add_restaurant(request):
         request.session['restaurant_success'] = "Restaurant added successfully!"
         return redirect('open_add_restaurant')
 
-        
+@never_cache
+@admin_required      
 def show_restaurant(request):
     restaurantList = Restaurant.objects.all()
 
@@ -178,7 +210,8 @@ def show_restaurant(request):
         }
     )
 
-
+@never_cache
+@admin_required
 def open_update_menu(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, id=restaurant_id)
     
@@ -187,7 +220,8 @@ def open_update_menu(request, restaurant_id):
         {'restaurant': restaurant,'items': items}
     )
 
-
+@never_cache
+@admin_required
 def update_menu(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, id=restaurant_id)
 
@@ -226,7 +260,8 @@ def delete_menu_item(request, item_id):
     item.delete()
     return redirect('open_update_menu', restaurant_id=restaurant_id)
 
-
+@never_cache
+@admin_required
 def edit_menu_item(request, item_id):
     item = get_object_or_404(Item, id=item_id)
 
@@ -241,7 +276,8 @@ def edit_menu_item(request, item_id):
         return redirect('open_update_menu', restaurant_id=item.restaurant.id)
 
 
-
+@never_cache
+@customer_required
 def view_menu(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, id=restaurant_id)
     items = Item.objects.filter(restaurant=restaurant)
@@ -271,6 +307,8 @@ def view_menu(request, restaurant_id):
         'cart_count': cart_count
     })
 
+@never_cache
+@admin_required
 def update_restaurant(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, id=restaurant_id)
 
@@ -311,7 +349,8 @@ def update_restaurant(request, restaurant_id):
 
     return redirect("show_restaurant")
 
-
+@never_cache
+@admin_required
 def delete_restaurant(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, id=restaurant_id)
     AdminActivity.objects.create(
@@ -321,6 +360,8 @@ def delete_restaurant(request, restaurant_id):
     restaurantList = Restaurant.objects.all()
     return render(request, 'show_restaurants.html', {"restaurantList" : restaurantList})
 
+@never_cache
+@customer_required
 def add_to_cart(request, item_id):
     if request.method == 'POST':
         user = User.objects.get(username=request.session['username'])
@@ -356,7 +397,8 @@ def add_to_cart(request, item_id):
             'cart_count': cart_count
         })
 
-    
+@never_cache
+@customer_required   
 def remove_from_cart(request, item_id):
     if request.method == 'POST':
         user = User.objects.get(username=request.session['username'])
@@ -372,8 +414,12 @@ def remove_from_cart(request, item_id):
             'total_price': total_price
         })
 
-
+@never_cache
+@customer_required
 def view_cart(request):
+    if request.session.get("payment_done"):
+        return redirect("customer_home")
+    
     if not request.session.get('username'):
         return redirect('/')
 
@@ -392,7 +438,8 @@ def view_cart(request):
         'razorpay_key': settings.RAZORPAY_KEY_ID,
     })
 
-
+@never_cache
+@customer_required
 def update_quantity(request, item_id, action):
     if request.method == 'POST':
         user = User.objects.get(username=request.session['username'])
@@ -417,7 +464,9 @@ def update_quantity(request, item_id, action):
             'total_qty': total_qty,
             'total_price': total_price
         })
-        
+
+@never_cache
+@customer_required      
 def checkout(request, username):
     customer = get_object_or_404(User, username=username)
     cart = Cart.objects.filter(customer=customer).first()
@@ -457,6 +506,7 @@ def payment_success(request):
             cart.restaurant = None
             cart.save()
 
+        request.session["payment_done"] = True
         return JsonResponse({"status": "success"})
 
     except Exception as e:

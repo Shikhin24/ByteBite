@@ -209,7 +209,7 @@ function showSuccessModal() {
 
     if (seconds === 0) {
       clearInterval(timer);
-      window.location.href = "{% url 'customer_home' %}";
+      window.location.replace("{% url 'customer_home' %}");
     }
   }, 1000);
 }

@@ -219,7 +219,6 @@ button {
   padding: 4px;
   background: linear-gradient(180deg, var(--panel-soft), var(--panel));
   border: 1px solid var(--border);
-  
 }
 
 .toggle-btn {
@@ -232,10 +231,7 @@ button {
   font-size: var(--text-md);
   font-weight: 600;
 
-  transition:
-    background 0.2s ease,
-    box-shadow 0.2s ease,
-    transform 0.15s ease;
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
 }
 
 .toggle-btn.active {
@@ -246,9 +242,8 @@ button {
   );
 
   color: var(--text);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.06),
-    0 6px 16px rgba(0,0,0,0.45);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 6px 16px rgba(0, 0, 0, 0.45);
 
   transform: translateY(-1px);
 }
@@ -259,7 +254,6 @@ button {
 }
 .toggle-btn:not(.active) {
   background: rgba(1, 1, 1, 0.04);
-  
 }
 
 /* PRESS */
@@ -329,23 +323,15 @@ textarea:focus {
   width: 100%;
   margin-top: 20px;
 
-  background: linear-gradient(
-    180deg,
-    var(--btn-bg),
-    var(--btn-bg-hover)
-  );
+  background: linear-gradient(180deg, var(--btn-bg), var(--btn-bg-hover));
 
   color: var(--btn-text);
   border: none;
   cursor: pointer;
 
-  box-shadow:
-    0 10px 22px rgba(0,0,0,0.35);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.35);
 
-  transition:
-    background 0.2s ease,
-    transform 0.15s ease,
-    box-shadow 0.15s ease;
+  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .auth-form button:not(.toggle-password):hover {
@@ -354,21 +340,15 @@ textarea:focus {
     var(--btn-bg),
     color-mix(in srgb, var(--btn-bg) 85%, var(--panel) 15%)
   );
-  
 
   transform: translateY(-1px);
-  box-shadow:
-    0 14px 30px rgba(0,0,0,0.45);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.45);
 }
-
 
 .auth-form button:not(.toggle-password):active {
   transform: translateY(0);
-  box-shadow:
-    0 6px 14px rgba(0,0,0,0.35);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
 }
-
-
 
 /* ===============================
    PASSWORD ICON
@@ -531,7 +511,6 @@ textarea:focus {
 
   text-transform: uppercase;
 }
-
 
 .data-table img {
   max-width: 80px;
@@ -822,34 +801,26 @@ input[type="number"] {
   border: 1px solid var(--border);
   color: var(--text);
 
-  box-shadow:
-    0 2px 6px rgba(0, 0, 0, 0.35),
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
 
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease,
-    background 0.15s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
 
 .btn:hover {
   transform: translateY(-1px);
-  box-shadow:
-    0 6px 14px rgba(0, 0, 0, 0.45),
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .btn:active {
   transform: translateY(0);
-  box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.4),
-    inset 0 2px 4px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 2px 4px rgba(0, 0, 0, 0.35);
 }
-
 
 .btn.ghost {
   color: var(--text);
-    background: linear-gradient(
+  background: linear-gradient(
     180deg,
     rgba(255, 255, 255, 0.04),
     rgba(255, 255, 255, 0.01)
@@ -878,7 +849,6 @@ input[type="number"] {
     rgba(255, 77, 77, 0.08)
   );
 }
-
 
 /* ===============================
    RESTAURANT CARD GRID
@@ -1189,7 +1159,6 @@ input[type="number"] {
   color: var(--text-muted);
 }
 
-
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -1264,7 +1233,6 @@ input[type="number"] {
   border-color: var(--text);
   box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.15);
 }
-
 
 .menu-tools input {
   width: 220px;
@@ -1364,7 +1332,6 @@ input[type="number"] {
   font-size: 13px;
 }
 
-
 /* ===============================
    CUSTOMER TOP BAR
 ================================ */
@@ -1447,18 +1414,16 @@ input[type="number"] {
   color: var(--text);
   text-decoration: none;
 
-  box-shadow:
-    0 6px 16px rgba(0,0,0,0.45),
-    inset 0 1px 0 rgba(255,255,255,0.05);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .cart-btn:hover {
   transform: translateY(-1px);
-  box-shadow:
-    0 12px 28px rgba(0,0,0,0.6),
-    inset 0 1px 0 rgba(255,255,255,0.08);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .cart-btn span {
@@ -1488,8 +1453,8 @@ input[type="number"] {
 }
 
 .location-row {
-  margin-top: auto;           /* pushes it to bottom */
-  min-height: 36px;           /* 🔑 SAME SPACE FOR ALL */
+  margin-top: auto; /* pushes it to bottom */
+  min-height: 36px; /* 🔑 SAME SPACE FOR ALL */
   display: flex;
   align-items: center;
 }
@@ -1523,22 +1488,20 @@ input[type="number"] {
   border: 1px solid var(--border);
   background: linear-gradient(
     180deg,
-    rgba(255,255,255,0.08),
-    rgba(255,255,255,0.03)
+    rgba(255, 255, 255, 0.08),
+    rgba(255, 255, 255, 0.03)
   );
 
   color: var(--text);
 
-  box-shadow:
-    0 2px 6px rgba(0,0,0,0.4),
-    inset 0 1px 0 rgba(255,255,255,0.06);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .location-btn:hover {
   transform: translateY(-1px);
-  box-shadow:
-    0 6px 14px rgba(0,0,0,0.6),
-    inset 0 1px 0 rgba(255,255,255,0.1);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 /* ===============================
@@ -1584,14 +1547,13 @@ input[type="number"] {
 
   display: flex;
   justify-content: flex-end;
-  
 }
 
 .cart-summary .summary-text {
   min-width: 110px;
 }
 .cart-summary .summary-text strong {
-  font-size: 24px;        
+  font-size: 24px;
   font-weight: 600;
   line-height: 1.1;
 }
@@ -1625,46 +1587,30 @@ input[type="number"] {
 
   color: #111;
 
-  background: linear-gradient(
-    180deg,
-    #ffd166,
-    #ffb703
-  );
+  background: linear-gradient(180deg, #ffd166, #ffb703);
 
   border: none;
 
-  box-shadow:
-    0 0 0 1px rgba(255, 183, 3, 0.25),
-    0 8px 18px rgba(255, 183, 3, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 0 1px rgba(255, 183, 3, 0.25),
+    0 8px 18px rgba(255, 183, 3, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.5);
 
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease,
-    filter 0.15s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
 }
-
 
 #checkout-btn:hover {
   transform: translateY(-1px);
   filter: brightness(1.05);
 
-  box-shadow:
-    0 0 0 1px rgba(255, 183, 3, 0.35),
-    0 12px 28px rgba(255, 183, 3, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  box-shadow: 0 0 0 1px rgba(255, 183, 3, 0.35),
+    0 12px 28px rgba(255, 183, 3, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
-
 
 #checkout-btn:active {
   transform: translateY(0);
 
-  box-shadow:
-    0 4px 10px rgba(255, 183, 3, 0.3),
+  box-shadow: 0 4px 10px rgba(255, 183, 3, 0.3),
     inset 0 2px 4px rgba(0, 0, 0, 0.25);
 }
-
-
 
 /* ===============================
    CART TABLE ALIGNMENT
@@ -1694,7 +1640,7 @@ input[type="number"] {
 }
 
 .data-table tr:hover td {
-  background: rgba(255,255,255,0.03);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .data-table tr:hover .cart-item-img {
@@ -1704,7 +1650,6 @@ input[type="number"] {
 .data-table tr:first-child th {
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 }
-
 
 /* ===============================
    QUANTITY CONTROLS
@@ -1716,8 +1661,8 @@ input[type="number"] {
 
   background: linear-gradient(
     180deg,
-    rgba(255,255,255,0.08),
-    rgba(255,255,255,0.03)
+    rgba(255, 255, 255, 0.08),
+    rgba(255, 255, 255, 0.03)
   );
 
   border: 1px solid var(--border);
@@ -1729,24 +1674,21 @@ input[type="number"] {
 
   cursor: pointer;
 
-  box-shadow:
-    0 2px 6px rgba(0,0,0,0.4),
-    inset 0 1px 0 rgba(255,255,255,0.06);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
 
   transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 
 .qty-btn:hover {
   transform: translateY(-1px);
-  box-shadow:
-    0 6px 14px rgba(0,0,0,0.6),
-    inset 0 1px 0 rgba(255,255,255,0.08);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .qty-btn:active {
   transform: translateY(0);
-  box-shadow:
-    inset 0 2px 4px rgba(0,0,0,0.35);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.35);
 }
 
 .qty {
@@ -1762,7 +1704,7 @@ input[type="number"] {
 
 .cart-empty {
   text-align: center;
-  padding: 60px 20px;
+  padding: 80px 20px;
 }
 
 .cart-empty .empty-icon {
@@ -1776,8 +1718,8 @@ input[type="number"] {
   margin-bottom: 6px;
 }
 
-.cart-empty .btn {
-  margin-top: 20px;
+.cart-empty p {
+  margin-bottom: 28px;
 }
 
 /* ===============================
@@ -1800,9 +1742,8 @@ input[type="number"] {
 
   background: var(--panel-soft);
 
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.08),
-    0 4px 10px rgba(0,0,0,0.35);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 4px 10px rgba(0, 0, 0, 0.35);
 }
 
 .item-name {
@@ -1835,7 +1776,3 @@ input[type="number"] {
   font-weight: 600;
   opacity: 0.85;
 }
-
-
-
-
