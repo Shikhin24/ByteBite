@@ -10,7 +10,6 @@ urlpatterns = [
     path("logout/", views.logout_view, name="logout"),
     path('admin_home/', views.admin_home, name='admin_home'),
     path('customer/', views.customer_home, name='customer_home'),
-    path('open_add_restaurant', views.open_add_restaurant, name='open_add_restaurant'),
     path('add_restaurant', views.add_restaurant, name='add_restaurant'),
     path('show_restaurant', views.show_restaurant, name='show_restaurant'),
     path('restaurant/<int:restaurant_id>/open_update_menu/',
@@ -45,5 +44,4 @@ path('menu/edit/<int:item_id>/', views.edit_menu_item, name='edit_menu_item'),
     path('payment-success/', views.payment_success, name='payment_success'),
     path("cart/status/", views.cart_status, name="cart_status"),
 
-    
 ]

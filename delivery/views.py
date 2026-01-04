@@ -143,14 +143,6 @@ def customer_home(request):
         }
     )
 
-@never_cache
-@admin_required      
-def open_add_restaurant(request):
-    context = {
-        "restaurant_error": request.session.pop("restaurant_error", None),
-        "restaurant_success": request.session.pop("restaurant_success", None),
-    }
-    return render(request, 'add_restaurants.html', context)
 
 @never_cache
 @admin_required
@@ -165,16 +157,19 @@ def add_restaurant(request):
         # validation
         if not name or not picture or not cuisine or not rating:
             request.session['restaurant_error'] = "All fields are required."
-            return redirect('open_add_restaurant')
+            return redirect('admin_home')
+
 
         rating = float(rating)
         if rating < 0 or rating > 5:
             request.session['restaurant_error'] = "Rating must be between 0 and 5."
-            return redirect('open_add_restaurant')
+            return redirect('admin_home')
+
 
         if Restaurant.objects.filter(name=name).exists():
             request.session['restaurant_error'] = "Restaurant already exists."
-            return redirect('open_add_restaurant')
+            return redirect('admin_home')
+
 
         Restaurant.objects.create(
             name=name,
@@ -187,7 +182,8 @@ def add_restaurant(request):
         AdminActivity.objects.create(action=f"Added restaurant: {name}")
 
         request.session['restaurant_success'] = "Restaurant added successfully!"
-        return redirect('open_add_restaurant')
+        return redirect('admin_home')
+
 
 @never_cache
 @admin_required      
@@ -354,11 +350,11 @@ def update_restaurant(request, restaurant_id):
 def delete_restaurant(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, id=restaurant_id)
     AdminActivity.objects.create(
-    action=f"Deleted restaurant: {restaurant.name}")
+        action=f"Deleted restaurant: {restaurant.name}"
+    )
     restaurant.delete()
-    
-    restaurantList = Restaurant.objects.all()
-    return render(request, 'show_restaurants.html', {"restaurantList" : restaurantList})
+    return redirect("show_restaurant")
+
 
 @never_cache
 @customer_required

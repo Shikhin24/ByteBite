@@ -1168,6 +1168,7 @@ input[type="number"] {
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  cursor: pointer;
 }
 
 .modal-overlay.active {
@@ -1180,6 +1181,7 @@ input[type="number"] {
   background: linear-gradient(180deg, var(--panel), var(--panel-soft));
   border: 1px solid var(--border);
   box-shadow: var(--shadow-main);
+  cursor: default;
 }
 
 .menu-controls {
@@ -1270,6 +1272,11 @@ input[type="number"] {
   font-weight: 600;
   letter-spacing: var(--ls-tight);
 }
+
+body.modal-open #themeToggle {
+  display: none;
+}
+
 
 /* Checkbox */
 .checkbox {

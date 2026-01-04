@@ -28,7 +28,7 @@
 
       <!-- Sign in -->
       <div id="signinForm" class="auth-form {% if active_tab == 'signin' %}active{% endif %}">
-        <form action="{% url 'signin' %}" method="post">
+        <form action="{% url 'signin' %}" method="post" autocomplete="on">
           {% csrf_token %}
 
           {% if signup_success and active_tab == 'signin' %}
@@ -43,12 +43,12 @@
           </p>
           {% endif %}
           <label for="signin-email">Email</label>
-          <input id="signin-email" type="email" name="email">
+          <input id="signin-email" type="email" name="email" autocomplete="username">
 
 
           <label for="signinPassword">Password</label>
           <div class="password-field">
-            <input type="password" name="password" id="signinPassword">
+            <input type="password" name="password" id="signinPassword" autocomplete="current-password">
 
             <button type="button" class="toggle-password" data-target="signinPassword"
               aria-label="Toggle password visibility">
@@ -86,7 +86,7 @@
 
           <label for="signupPassword">Password</label>
           <div class="password-field">
-            <input type="password" name="password" id="signupPassword">
+            <input type="password" name="password" id="signupPassword" autocomplete="new-password">
 
             <button type="button" class="toggle-password" data-target="signupPassword"
               aria-label="Toggle password visibility">
@@ -103,7 +103,7 @@
           </div>
 
           <label for="signup-email">Email</label>
-          <input id="signup-email" type="email" name="email">
+          <input id="signup-email" type="email" name="email" autocomplete="email">
 
           <label>Mobile</label>
           <input type="text" name="mobile">
