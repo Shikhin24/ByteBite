@@ -8,6 +8,15 @@
   --btn-text: #000000;
 
   --bg: #121212;
+  
+  --toast-bg: #f5f5f5;
+  --toast-text: #111;
+
+  --toast-shadow: 
+    0 10px 24px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(0, 0, 0, 0.08);
+
+  border-color: rgba(0,0,0,0.15);
 
   --panel: #1c1c1c;
   --panel-soft: #161616;
@@ -103,6 +112,15 @@
 
   --page-gradient: radial-gradient(circle at top, #e1e5eb, #cfd6df);
 
+  --toast-bg: #1f2937;
+  --toast-text: #f9fafb;
+
+  --toast-shadow: 
+    0 12px 28px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(255, 255, 255, 0.12);
+
+  border-color: rgba(255,255,255,0.15);
+
   --panel: #f1f3f6;
   --panel-soft: #e6e9ee;
 
@@ -159,6 +177,34 @@ button {
   border-radius: 0;
 }
 
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--toast-bg);
+  color: var(--toast-text);
+  padding: 14px 20px;
+  font-size: 14px;
+  box-shadow: var(--toast-shadow);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  z-index: 9999;
+  border: 1px solid rgba(0,0,0,0.1);
+}
+
+.toast.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(-10px);
+}
+
+.toast.hidden {
+  display: none;
+}
+
+
 /* ===============================
    LAYOUT
 ================================ */
@@ -203,7 +249,7 @@ button {
 }
 
 .card h2 {
-  margin-bottom: var(--space-1);
+  margin-bottom: var(--space-5);
   text-align: center;
   font-size: var(--text-xl);
   font-weight: 700;

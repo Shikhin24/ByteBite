@@ -26,7 +26,7 @@ def customer_required(view_func):
         return view_func(request, *args, **kwargs)
     return wrapper
 
-
+@never_cache
 def index(request):
     context = {
         'login_error': request.session.pop('login_error', None),
@@ -104,7 +104,10 @@ def logout_view(request):
     request.session.flush()
     response = redirect("/")
     response["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    response["Pragma"] = "no-cache"
+    response["Expires"] = "0"
     return response
+
 
 
 @never_cache
@@ -166,7 +169,7 @@ def add_restaurant(request):
             return redirect('admin_home')
 
 
-        if Restaurant.objects.filter(name=name).exists():
+        if Restaurant.objects.filter(name__iexact=name).exists():
             request.session['restaurant_error'] = "Restaurant already exists."
             return redirect('admin_home')
 
@@ -210,47 +213,62 @@ def show_restaurant(request):
 @admin_required
 def open_update_menu(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, id=restaurant_id)
-    
     items = Item.objects.filter(restaurant=restaurant)
-    return render(request,'update_menu.html',
-        {'restaurant': restaurant,'items': items}
-    )
+
+    context = {
+        "restaurant": restaurant,
+        "items": items,
+        "menu_error": request.session.pop("menu_error", None),
+        "menu_success": request.session.pop("menu_success", None),
+    }
+
+    return render(request, "update_menu.html", context)
+
 
 @never_cache
 @admin_required
 def update_menu(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, id=restaurant_id)
 
-    if request.method == 'POST':
-        name = request.POST.get('name')
-        description = request.POST.get('description')
-        picture = request.POST.get('picture')
-        price = request.POST.get('price')
-        nonVeg = request.POST.get('nonVeg') == 'on'
+    if request.method == "POST":
+        name = request.POST.get("name", "").strip()
+        description = request.POST.get("description", "").strip()
+        picture = request.POST.get("picture", "").strip()
+        price = request.POST.get("price", "").strip()
+        nonVeg = request.POST.get("nonVeg") == "on"
 
+        # ❌ Validation: empty fields
         if not all([name, description, picture, price]):
-            return HttpResponse("All fields are required")
+            request.session["menu_error"] = "All fields are required."
+            return redirect("open_update_menu", restaurant_id=restaurant.id)
 
-        if Item.objects.filter(name=name, restaurant=restaurant).exists():
-            return HttpResponse("Duplicate menu")
+        # ❌ Validation: duplicate menu
+        if Item.objects.filter(restaurant=restaurant, name__iexact=name).exists():
+            request.session["menu_error"] = "Menu item with this name already exists."
+            return redirect("open_update_menu", restaurant_id=restaurant.id)
 
+
+        # ✅ Create menu
         Item.objects.create(
             restaurant=restaurant,
             name=name,
             description=description,
+            picture=picture,
             price=price,
             nonVeg=nonVeg,
-            picture=picture
         )
+
         AdminActivity.objects.create(
             action=f"Added menu item: {name}"
         )
-        return HttpResponse("Menu added successfully")
-    
-def delete_menu_item(request, item_id):
-    if not request.session.get('is_admin'):
-        return redirect('/')
 
+        request.session["menu_success"] = "Menu item added successfully!"
+        return redirect("open_update_menu", restaurant_id=restaurant.id)
+
+
+@never_cache
+@admin_required 
+def delete_menu_item(request, item_id):
     item = get_object_or_404(Item, id=item_id)
     restaurant_id = item.restaurant.id
     item.delete()
@@ -260,16 +278,23 @@ def delete_menu_item(request, item_id):
 @admin_required
 def edit_menu_item(request, item_id):
     item = get_object_or_404(Item, id=item_id)
-
+    
     if request.method == 'POST':
-        item.name = request.POST.get('name')
+        name = request.POST.get('name').strip()
+        
+        if Item.objects.filter(
+            restaurant=item.restaurant,name__iexact=request.POST.get("name")).exclude(id=item.id).exists():
+            request.session["menu_error"] = "Another menu item with this name already exists."
+            return redirect("open_update_menu", restaurant_id=item.restaurant.id)
+        
+        item.name = name
         item.description = request.POST.get('description')
         item.picture = request.POST.get('picture')
         item.price = request.POST.get('price')
         item.nonVeg = request.POST.get('nonVeg') == 'on'
         item.save()
 
-        return redirect('open_update_menu', restaurant_id=item.restaurant.id)
+    return redirect('open_update_menu', restaurant_id=item.restaurant.id)
 
 
 @never_cache
@@ -337,6 +362,12 @@ def update_restaurant(request, restaurant_id):
         restaurant.cuisine = cuisine
         restaurant.rating = rating
         restaurant.location_url = location_url
+        
+        if Restaurant.objects.filter(name__iexact=name).exclude(id=restaurant.id).exists():
+            request.session["restaurant_error"] = "Restaurant with this name already exists."
+            return redirect("show_restaurant")
+
+        
         restaurant.save()
 
         AdminActivity.objects.create(
@@ -366,10 +397,15 @@ def add_to_cart(request, item_id):
 
         cart, created = Cart.objects.get_or_create(customer=user)
 
+        if not cart.cart_items.exists():
+            cart.restaurant = None
+            cart.save()
+
+        
         # 🔴 Restaurant check
         if cart.restaurant and cart.restaurant != item_restaurant:
             return JsonResponse({
-                'error': 'You cannot add items from multiple restaurants.'
+                'error': '❌ You cannot add items from multiple restaurants.'
             }, status=400)
 
         # First item → lock restaurant
@@ -394,13 +430,18 @@ def add_to_cart(request, item_id):
         })
 
 @never_cache
-@customer_required   
+@customer_required
 def remove_from_cart(request, item_id):
     if request.method == 'POST':
         user = User.objects.get(username=request.session['username'])
         cart = Cart.objects.get(customer=user)
 
         CartItem.objects.filter(cart=cart, item_id=item_id).delete()
+
+        # 🔥 CHECK IF CART IS EMPTY
+        if not cart.cart_items.exists():
+            cart.restaurant = None
+            cart.save()
 
         total_qty = sum(ci.quantity for ci in cart.cart_items.all())
         total_price = cart.total_price()
@@ -409,6 +450,7 @@ def remove_from_cart(request, item_id):
             'total_qty': total_qty,
             'total_price': total_price
         })
+
 
 @never_cache
 @customer_required

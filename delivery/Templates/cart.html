@@ -5,81 +5,76 @@
 
 <div class="cart-page">
 
+  <!-- CART CONTENT -->
+  <div id="cart-content" {% if not cart.cart_items.all %}style="display:none;"{% endif %}>
+
+      <!-- HEADER (ALWAYS PRESENT) -->
   <div class="cart-header">
-    {% if cart.cart_items.all %}
     <a href="{% url 'customer_home' %}" class="back-link">← Back to Restaurants</a>
     <h2>My Cart</h2>
   </div>
+    <div class="cart-card">
 
-  <div class="cart-card">
+      <table class="data-table">
+        <tr>
+          <th>Item</th>
+          <th>Quantity</th>
+          <th>Price</th>
+          <th>Action</th>
+        </tr>
 
-    <table class="data-table">
-      <tr>
-        <th>Item</th>
-        <th>Quantity</th>
-        <th>Price</th>
-        <th>Action</th>
-      </tr>
+        {% for ci in cart.cart_items.all %}
+        <tr data-item-id="{{ ci.item.id }}">
+          <td class="item-cell">
+            <img src="{{ ci.item.picture }}" class="cart-item-img" />
+            <span class="item-name">{{ ci.item.name }}</span>
+          </td>
 
-      {% for ci in cart.cart_items.all %}
-      <tr data-item-id="{{ ci.item.id }}">
-        <td class="item-cell">
-  <img
-    src="{{ ci.item.picture }}"
-    alt="{{ ci.item.name }}"
-    class="cart-item-img"
-  />
-  <span class="item-name">{{ ci.item.name }}</span>
-</td>
+          <td>
+            <button class="qty-btn" data-action="dec">−</button>
+            <span class="qty">{{ ci.quantity }}</span>
+            <button class="qty-btn" data-action="inc">+</button>
+          </td>
 
+          <td>₹{{ ci.item.price }}</td>
 
-        <td>
-          <button class="qty-btn" data-action="dec">−</button>
-          <span class="qty">{{ ci.quantity }}</span>
-          <button class="qty-btn" data-action="inc">+</button>
-        </td>
+          <td>
+            <button class="btn danger remove-btn">Remove</button>
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
 
-        <td class="price">₹{{ ci.item.price }}</td>
+      <div class="cart-summary">
+        <div class="summary-text">
+          <span>Total Items</span>
+          <strong id="total-qty">{{ total_quantity }}</strong>
+        </div>
 
-        <td>
-          <button class="btn danger remove-btn">Remove</button>
-        </td>
-      </tr>
-      {% endfor %}
-    </table>
+        <div class="summary-text">
+          <span>Total Amount</span>
+          <strong class="amount">
+            <span class="currency">₹</span>
+            <span id="total-price">{{ cart.total_price }}</span>
+          </strong>
+        </div>
 
-    <!-- SUMMARY BAR -->
-    <div class="cart-summary">
-      <div class="summary-text">
-        <span>Total Items</span>
-        <strong id="total-qty">{{ total_quantity }}</strong>
+        <button id="checkout-btn" class="btn">CHECK OUT</button>
       </div>
-
-      <div class="summary-text">
-        <span>Total Amount</span>
-        <strong class="amount">
-  <span class="currency">₹</span>
-  <span id="total-price"> {{ cart.total_price }}</span>
-</strong>
-
-      </div>
-
-      <button id="checkout-btn" class="btn">
-        CHECK OUT
-      </button>
     </div>
-  {% else %}
-    <div class="cart-empty">
-      <div class="empty-icon">🛒</div>
-      <h3>Your cart is feeling lonely</h3>
-      <p class="muted">Looks like you haven’t added anything yet.</p>
+  </div>
 
-      <a href="{% url 'customer_home' %}" class="btn">
-        Browse Restaurants
-      </a>
-    </div>
-  {% endif %}
+  <!-- EMPTY CART (ALWAYS PRESENT) -->
+  <div id="empty-cart"
+       class="cart-empty"
+       {% if cart.cart_items.all %}style="display:none;"{% endif %}>
+    <div class="empty-icon">🛒</div>
+    <h3>Your cart is feeling lonely</h3>
+    <p class="muted">Looks like you haven’t added anything yet.</p>
 
+    <a href="{% url 'customer_home' %}" class="btn">
+      Browse Restaurants
+    </a>
   </div>
 
 </div>
@@ -148,21 +143,38 @@ const confirmBtn = document.getElementById("confirmCheckout");
 
 // OPEN MODAL
 checkoutBtn.addEventListener("click", () => {
-  checkoutModal.classList.add("active");
+  // read live cart values
+  const totalQty = document.getElementById("total-qty").innerText;
+  const totalPrice = document.getElementById("total-price").innerText;
+
+  // update modal
+  document.getElementById("modal-total-items").innerText = totalQty;
+  document.getElementById("modal-total-price").innerText = "₹ " + totalPrice;
+
+  openModal("checkoutModal");
 });
+
 
 // CLOSE MODAL
 cancelBtn.addEventListener("click", () => {
-  checkoutModal.classList.remove("active");
+  closeModals();
 });
 
 // RAZORPAY
 confirmBtn.addEventListener("click", () => {
-  checkoutModal.classList.remove("active");
+  closeModals();
+
+    const totalPrice = parseFloat(
+    document.getElementById("total-price").innerText
+  );
+
+  if (totalPrice <= 0) {
+    return;
+  }
 
 const options = {
   key: "{{ razorpay_key }}",
-  amount: "{{ cart.total_price|floatformat:0 }}00",
+  amount: Math.round(totalPrice * 100),
   currency: "INR",
   name: "ByteBite",
   description: "Order Payment",
@@ -198,7 +210,7 @@ const options = {
 });
 
 function showSuccessModal() {
-  successModal.classList.add("active");
+  openModal("successModal");
 
   let seconds = 5;
   const counter = document.getElementById("redirectCounter");

@@ -122,7 +122,7 @@ function openRestaurantEdit(id, name, picture, cuisine, rating, location) {
   document.getElementById("restaurantEditForm").action =
     `/restaurant/${id}/update_restaurant/`;
 
-  document.getElementById("restaurantModal").classList.add("active");
+  openModal("restaurantModal");
 }
 
 /* EDIT BUTTON HANDLER */

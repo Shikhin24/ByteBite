@@ -24,9 +24,25 @@
 <body>
     {% block content %}{% endblock %}
     <button id="themeToggle" aria-label="Toggle theme">🌙</button>
+    <div id="toast" class="toast hidden"></div>
 
     <script src="{% static 'js/theme.js' %}"></script>
     <script src="{% static 'js/cart.js' %}"></script>
+    <script>
+        function showToast(message) {
+            const toast = document.getElementById("toast");
+            toast.textContent = message;
+            toast.classList.remove("hidden");
+            toast.classList.add("show");
+
+            setTimeout(() => {
+                toast.classList.remove("show");
+                setTimeout(() => toast.classList.add("hidden"), 300);
+            }, 2500);
+        }
+    </script>
+
+<script src="{% static 'js/modal.js' %}"></script>
 
 </body>
 

@@ -86,7 +86,7 @@ document.querySelectorAll(".add-to-cart-btn").forEach(button => {
       const data = await response.json();
 
       if (!response.ok) {
-        alert(data.error);
+        showToast(data.error);
         return;
       }
 

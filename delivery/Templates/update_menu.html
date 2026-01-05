@@ -83,6 +83,19 @@
   <div class="modal-card">
     <h3 id="modalTitle">Add New Menu Item</h3>
 
+    {% if menu_error %}
+  <div class="form-msg error">
+    {{ menu_error }}
+  </div>
+{% endif %}
+
+{% if menu_success %}
+  <div class="form-msg success">
+    {{ menu_success }}
+  </div>
+{% endif %}
+
+
     <form id="menuForm" method="POST">
       {% csrf_token %}
 
@@ -112,20 +125,12 @@
 
 <!-- ================= JS ================= -->
 <script>
-const modal = document.getElementById("menuModal");
 const form = document.getElementById("menuForm");
 
-function openModal() {
-  modal.classList.add("active");
-}
-
-modal.addEventListener("click", e => {
-  if (e.target === modal) modal.classList.remove("active");
-});
 
 /* ---------- ADD MODE ---------- */
 function openAddMenu() {
-  openModal();
+  openModal("menuModal");
 
   document.getElementById("modalTitle").innerText = "Add New Menu Item";
   document.getElementById("menuSubmitBtn").innerText = "Add Menu";
@@ -136,7 +141,7 @@ function openAddMenu() {
 
 /* ---------- EDIT MODE ---------- */
 function openEditMenu(id, name, desc, pic, price, nonVeg) {
-  openModal();
+  openModal("menuModal");
 
   document.getElementById("modalTitle").innerText = "Edit Menu Item";
   document.getElementById("menuSubmitBtn").innerText = "Update Menu";
@@ -174,6 +179,12 @@ function applyFilter() {
 
 searchInput.addEventListener("input", applyFilter);
 filterSelect.addEventListener("change", applyFilter);
+
+  {% if menu_error or menu_success %}
+    window.addEventListener("DOMContentLoaded", () => {
+      openModal("menuModal");
+    });
+  {% endif %}
 </script>
 
 {% endblock %}

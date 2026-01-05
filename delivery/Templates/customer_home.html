@@ -35,9 +35,11 @@
     🛒 Cart <span id="cart-count">{{ cart_count }}</span>
   </a>
 
-  <a href="{% url 'logout' %}" class="btn ghost">
-  Logout
-</a>
+<form action="{% url 'logout' %}" method="post">
+  {% csrf_token %}
+  <button type="submit" class="btn ghost">Logout</button>
+</form>
+
 
 </div>
 

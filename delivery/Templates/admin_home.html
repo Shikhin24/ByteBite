@@ -14,7 +14,11 @@
 
         <div class="admin-topbar">
             <div class="admin-links">
-                <a href="{% url 'logout' %}">Logout</a>
+                <form action="{% url 'logout' %}" method="post">
+  {% csrf_token %}
+  <button type="submit" class="btn ghost">Logout</button>
+</form>
+
             </div>
         </div>
     </header>
@@ -123,22 +127,7 @@
 
   openBtn.addEventListener("click", (e) => {
     e.preventDefault();
-    modal.classList.add("active");
-    document.body.classList.add("modal-open");
-  });
-
-  modal.addEventListener("click", (e) => {
-    if (e.target === modal) {
-      modal.classList.remove("active");
-      document.body.classList.remove("modal-open");
-    }
-  });
-
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && modal.classList.contains("active")) {
-      modal.classList.remove("active");
-      document.body.classList.remove("modal-open");
-    }
+    openModal("addRestaurantModal");
   });
 </script>
 

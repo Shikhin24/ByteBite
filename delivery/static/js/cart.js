@@ -1,5 +1,15 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+  function checkEmptyCart() {
+  const rows = document.querySelectorAll("table.data-table tr[data-item-id]");
+
+  if (rows.length === 0) {
+    document.getElementById("cart-content").style.display = "none";
+    document.getElementById("empty-cart").style.display = "block";
+  }
+}
+
+
   const csrfMeta = document.querySelector('meta[name="csrf-token"]');
   if (!csrfMeta) {
     console.error("CSRF token meta not found");
@@ -25,6 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .then(data => {
         if (data.quantity === 0) {
           row.remove();
+          checkEmptyCart();
         } else {
           row.querySelector('.qty').innerText = data.quantity;
         }
@@ -48,10 +59,11 @@ document.addEventListener("DOMContentLoaded", () => {
       .then(res => res.json())
       .then(data => {
         row.remove();
+        checkEmptyCart();
+        
         document.getElementById('total-qty').innerText = data.total_qty;
         document.getElementById('total-price').innerText = data.total_price;
 
-        sessionStorage.setItem("cart_updated", "true");
       })
       .catch(err => console.error(err));
       
@@ -61,15 +73,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 
-window.addEventListener("beforeunload", () => {
-  sessionStorage.setItem("cart_updated", "true");
-});
-
-window.addEventListener("pageshow", () => {
-  if (sessionStorage.getItem("cart_updated")) {
-    syncMenuCart();
-    sessionStorage.removeItem("cart_updated");
-  }
-});
 
 
