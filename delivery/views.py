@@ -2,9 +2,8 @@ import json
 from django.views.decorators.cache import never_cache
 from functools import wraps
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth import logout
 from django.conf import settings
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 import razorpay
 from .models import AdminActivity, Cart, CartItem, Item, Restaurant, User
