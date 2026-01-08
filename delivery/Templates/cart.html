@@ -6,13 +6,13 @@
 <div class="cart-page">
 
   <!-- CART CONTENT -->
-  <div id="cart-content" {% if not cart.cart_items.all %}style="display:none;"{% endif %}>
+  <div id="cart-content" {% if not cart.cart_items.all %}style="display:none;" {% endif %}>
 
-      <!-- HEADER (ALWAYS PRESENT) -->
-  <div class="cart-header">
-    <a href="{% url 'customer_home' %}" class="back-link">← Back to Restaurants</a>
-    <h2>My Cart</h2>
-  </div>
+    <!-- HEADER (ALWAYS PRESENT) -->
+    <div class="cart-header">
+      <a href="{% url 'customer_home' %}" class="back-link">← Back to Restaurants</a>
+      <h2>My Cart</h2>
+    </div>
     <div class="cart-card">
 
       <table class="data-table">
@@ -65,9 +65,7 @@
   </div>
 
   <!-- EMPTY CART (ALWAYS PRESENT) -->
-  <div id="empty-cart"
-       class="cart-empty"
-       {% if cart.cart_items.all %}style="display:none;"{% endif %}>
+  <div id="empty-cart" class="cart-empty" {% if cart.cart_items.all %}style="display:none;" {% endif %}>
     <div class="empty-icon">🛒</div>
     <h3>Your cart is feeling lonely</h3>
     <p class="muted">Looks like you haven’t added anything yet.</p>
@@ -96,7 +94,7 @@
       </div>
       <div>
         <span>Total Amount</span>
-        <strong id="modal-total-price" class="amount"><span class="currency">₹</span>  {{ cart.total_price }}</strong>
+        <strong id="modal-total-price" class="amount"><span class="currency">₹</span> {{ cart.total_price }}</strong>
       </div>
     </div>
 
@@ -134,98 +132,97 @@
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <script>
-const checkoutBtn = document.getElementById("checkout-btn");
-const checkoutModal = document.getElementById("checkoutModal");
-const successModal = document.getElementById("successModal");
+  const checkoutBtn = document.getElementById("checkout-btn");
+  const checkoutModal = document.getElementById("checkoutModal");
+  const successModal = document.getElementById("successModal");
 
-const cancelBtn = document.getElementById("cancelCheckout");
-const confirmBtn = document.getElementById("confirmCheckout");
+  const cancelBtn = document.getElementById("cancelCheckout");
+  const confirmBtn = document.getElementById("confirmCheckout");
 
-// OPEN MODAL
-checkoutBtn.addEventListener("click", () => {
-  // read live cart values
-  const totalQty = document.getElementById("total-qty").innerText;
-  const totalPrice = document.getElementById("total-price").innerText;
+  // OPEN MODAL
+  checkoutBtn.addEventListener("click", () => {
+    // read live cart values
+    const totalQty = document.getElementById("total-qty").innerText;
+    const totalPrice = document.getElementById("total-price").innerText;
 
-  // update modal
-  document.getElementById("modal-total-items").innerText = totalQty;
-  document.getElementById("modal-total-price").innerText = "₹ " + totalPrice;
+    // update modal
+    document.getElementById("modal-total-items").innerText = totalQty;
+    document.getElementById("modal-total-price").innerText = "₹ " + totalPrice;
 
-  openModal("checkoutModal");
-});
+    openModal("checkoutModal");
+  });
 
 
-// CLOSE MODAL
-cancelBtn.addEventListener("click", () => {
-  closeModals();
-});
+  // CLOSE MODAL
+  cancelBtn.addEventListener("click", () => {
+    closeModals();
+  });
 
-// RAZORPAY
-confirmBtn.addEventListener("click", () => {
-  closeModals();
+  // RAZORPAY
+  confirmBtn.addEventListener("click", () => {
+    closeModals();
 
     const totalPrice = parseFloat(
-    document.getElementById("total-price").innerText
-  );
+      document.getElementById("total-price").innerText
+    );
 
-  if (totalPrice <= 0) {
-    return;
-  }
-
-const options = {
-  key: "{{ razorpay_key }}",
-  amount: Math.round(totalPrice * 100),
-  currency: "INR",
-  name: "ByteBite",
-  description: "Order Payment",
-
-  handler: function (response) {
-
-    document.body.classList.add("payment-complete");
-    showSuccessModal();
-
-    fetch("/payment-success/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "same-origin",
-      body: JSON.stringify(response)
-    })
-    .then(res => res.json())
-  },
-
-  prefill: {
-    name: "{{ username }}",
-    email: "customer@example.com",
-    contact: "9999999999"
-  },
-
-  theme: {
-    color: "#528FF0"
-  }
-};
-
-
-  const rzp = new Razorpay(options);
-  rzp.open();
-});
-
-function showSuccessModal() {
-  openModal("successModal");
-
-  let seconds = 5;
-  const counter = document.getElementById("redirectCounter");
-
-  const timer = setInterval(() => {
-    seconds--;
-    counter.innerText = seconds;
-
-    if (seconds === 0) {
-      clearInterval(timer);
-      window.location.replace("{% url 'customer_home' %}");
+    if (totalPrice <= 0) {
+      return;
     }
-  }, 1000);
-}
-</script>
 
+    const options = {
+      key: "{{ razorpay_key }}",
+      amount: Math.round(totalPrice * 100),
+      currency: "INR",
+      name: "ByteBite",
+      description: "Order Payment",
+
+      handler: function (response) {
+
+        document.body.classList.add("payment-complete");
+        showSuccessModal();
+
+        fetch("/payment-success/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "same-origin",
+          body: JSON.stringify(response)
+        })
+          .then(res => res.json())
+      },
+
+      prefill: {
+        name: "{{ username }}",
+        email: "customer@example.com",
+        contact: "9999999999"
+      },
+
+      theme: {
+        color: "#528FF0"
+      }
+    };
+
+
+    const rzp = new Razorpay(options);
+    rzp.open();
+  });
+
+  function showSuccessModal() {
+    openModal("successModal");
+
+    let seconds = 5;
+    const counter = document.getElementById("redirectCounter");
+
+    const timer = setInterval(() => {
+      seconds--;
+      counter.innerText = seconds;
+
+      if (seconds === 0) {
+        clearInterval(timer);
+        window.location.replace("{% url 'customer_home' %}");
+      }
+    }, 1000);
+  }
+</script>
 
 {% endblock %}

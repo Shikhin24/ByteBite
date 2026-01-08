@@ -13,12 +13,12 @@
 
     <div class="menu-tools">
       <input type="text" id="menu-search" placeholder="Search food..." />
-      
-<select id="menu-filter">
-  <option value="all">All</option>
-  <option value="veg">Veg</option>
-  <option value="nonveg">Non-Veg</option>
-</select>
+
+      <select id="menu-filter">
+        <option value="all">All</option>
+        <option value="veg">Veg</option>
+        <option value="nonveg">Non-Veg</option>
+      </select>
       <a href="{% url 'view_cart' %}" class="cart-btn">
         🛒 Cart <span id="cart-count">{{ cart_count }}</span>
       </a>
@@ -40,24 +40,22 @@
         <div class="menu-meta">
           <span>₹{{ item.price }}</span>
           {% if item.nonVeg %}
-            <span class="type nonveg">Non-Veg</span>
+          <span class="type nonveg">Non-Veg</span>
           {% else %}
-            <span class="type veg">Veg</span>
+          <span class="type veg">Veg</span>
           {% endif %}
         </div>
 
         <div class="menu-actions">
-  <button
-    class="btn add-to-cart-btn {% if item.id in cart_item_ids %}danger{% endif %}"
-    data-item-id="{{ item.id }}"
-    data-state="{% if item.id in cart_item_ids %}added{% else %}add{% endif %}">
-    {% if item.id in cart_item_ids %}
-      Remove
-    {% else %}
-      Add to Cart
-    {% endif %}
-  </button>
-</div>
+          <button class="btn add-to-cart-btn {% if item.id in cart_item_ids %}danger{% endif %}"
+            data-item-id="{{ item.id }}" data-state="{% if item.id in cart_item_ids %}added{% else %}add{% endif %}">
+            {% if item.id in cart_item_ids %}
+            Remove
+            {% else %}
+            Add to Cart
+            {% endif %}
+          </button>
+        </div>
 
       </div>
 
@@ -69,53 +67,52 @@
 
 
 <script>
-const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+  const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-document.querySelectorAll(".add-to-cart-btn").forEach(button => {
-  button.addEventListener("click", async () => {
-    const itemId = button.dataset.itemId;
-    const state = button.dataset.state;
+  document.querySelectorAll(".add-to-cart-btn").forEach(button => {
+    button.addEventListener("click", async () => {
+      const itemId = button.dataset.itemId;
+      const state = button.dataset.state;
 
-    // ADD TO CART
-    if (state === "add") {
-      const response = await fetch(`/add-to-cart/${itemId}/`, {
-        method: "POST",
-        headers: { "X-CSRFToken": csrftoken }
-      });
+      // ADD TO CART
+      if (state === "add") {
+        const response = await fetch(`/add-to-cart/${itemId}/`, {
+          method: "POST",
+          headers: { "X-CSRFToken": csrftoken }
+        });
 
-      const data = await response.json();
+        const data = await response.json();
 
-      if (!response.ok) {
-        showToast(data.error);
-        return;
+        if (!response.ok) {
+          showToast(data.error);
+          return;
+        }
+
+        button.textContent = "Remove";
+        button.dataset.state = "added";
+        button.classList.add("danger");
+
+        document.getElementById("cart-count").innerText = data.cart_count;
       }
 
-      button.textContent = "Remove";
-      button.dataset.state = "added";
-      button.classList.add("danger");
+      // REMOVE FROM CART
+      else {
+        const response = await fetch(`/remove-from-cart/${itemId}/`, {
+          method: "POST",
+          headers: { "X-CSRFToken": csrftoken }
+        });
 
-      document.getElementById("cart-count").innerText = data.cart_count;
-    }
+        const data = await response.json();
 
-    // REMOVE FROM CART
-    else {
-      const response = await fetch(`/remove-from-cart/${itemId}/`, {
-        method: "POST",
-        headers: { "X-CSRFToken": csrftoken }
-      });
+        button.textContent = "Add to Cart";
+        button.dataset.state = "add";
+        button.classList.remove("danger");
 
-      const data = await response.json();
-
-      button.textContent = "Add to Cart";
-      button.dataset.state = "add";
-      button.classList.remove("danger");
-
-      document.getElementById("cart-count").innerText = data.total_qty;
-    }
+        document.getElementById("cart-count").innerText = data.total_qty;
+      }
+    });
   });
-});
 </script>
-
 
 <script>
   const menuSearch = document.getElementById("menu-search");
@@ -147,32 +144,28 @@ document.querySelectorAll(".add-to-cart-btn").forEach(button => {
 </script>
 
 <script>
-async function syncMenuCart() {
-  const res = await fetch("/cart/status/");
-  const data = await res.json();
+  async function syncMenuCart() {
+    const res = await fetch("/cart/status/");
+    const data = await res.json();
 
-  document.getElementById("cart-count").innerText = data.total_qty;
+    document.getElementById("cart-count").innerText = data.total_qty;
 
-  document.querySelectorAll(".add-to-cart-btn").forEach(btn => {
-    const id = parseInt(btn.dataset.itemId);
+    document.querySelectorAll(".add-to-cart-btn").forEach(btn => {
+      const id = parseInt(btn.dataset.itemId);
 
-    if (data.items.includes(id)) {
-      btn.textContent = "Remove";
-      btn.dataset.state = "added";
-      btn.classList.add("danger");
-    } else {
-      btn.textContent = "Add to Cart";
-      btn.dataset.state = "add";
-      btn.classList.remove("danger");
-    }
-  });
-}
+      if (data.items.includes(id)) {
+        btn.textContent = "Remove";
+        btn.dataset.state = "added";
+        btn.classList.add("danger");
+      } else {
+        btn.textContent = "Add to Cart";
+        btn.dataset.state = "add";
+        btn.classList.remove("danger");
+      }
+    });
+  }
 
-// 🔥 This fixes BACK button issue
-window.addEventListener("pageshow", syncMenuCart);
+  window.addEventListener("pageshow", syncMenuCart);
 </script>
 
-
 {% endblock %}
-
-

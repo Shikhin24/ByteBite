@@ -150,14 +150,15 @@ def customer_home(request):
 @admin_required
 def add_restaurant(request):
     if request.method == 'POST':
-        name = request.POST.get('name')
+        name = request.POST.get('name').strip()
+        area = request.POST.get('area', '').strip()
         picture = request.POST.get('picture')
         cuisine = request.POST.get('cuisine')
         rating = request.POST.get('rating')
         location_url = request.POST.get('location_url')
 
         # validation
-        if not name or not picture or not cuisine or not rating:
+        if not all([name, area, picture, cuisine, rating]):
             request.session['restaurant_error'] = "All fields are required."
             return redirect('admin_home')
 
@@ -168,20 +169,21 @@ def add_restaurant(request):
             return redirect('admin_home')
 
 
-        if Restaurant.objects.filter(name__iexact=name).exists():
+        if Restaurant.objects.filter(name__iexact=name, area__iexact=area).exists():
             request.session['restaurant_error'] = "Restaurant already exists."
             return redirect('admin_home')
 
 
         Restaurant.objects.create(
             name=name,
+            area=area,
             picture=picture,
             cuisine=cuisine,
             rating=rating,
             location_url=location_url
         )
 
-        AdminActivity.objects.create(action=f"Added restaurant: {name}")
+        AdminActivity.objects.create(action=f"Added restaurant: {name} ({area})")
 
         request.session['restaurant_success'] = "Restaurant added successfully!"
         return redirect('admin_home')
@@ -333,14 +335,15 @@ def update_restaurant(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, id=restaurant_id)
 
     if request.method == 'POST':
-        name = request.POST.get('name')
+        name = request.POST.get('name').strip()
+        area = request.POST.get('area').strip()
         picture = request.POST.get('picture')
         cuisine = request.POST.get('cuisine')
         rating = request.POST.get('rating')
         location_url = request.POST.get('location_url')
 
         # required fields (rating checked separately)
-        if not name or not picture or not cuisine or rating is None:
+        if not all([name, area, picture, cuisine, rating]):
             request.session["restaurant_error"] = "All fields are required."
             return redirect("show_restaurant")
 
@@ -357,12 +360,13 @@ def update_restaurant(request, restaurant_id):
 
         # save
         restaurant.name = name
+        restaurant.area = area
         restaurant.picture = picture
         restaurant.cuisine = cuisine
         restaurant.rating = rating
         restaurant.location_url = location_url
         
-        if Restaurant.objects.filter(name__iexact=name).exclude(id=restaurant.id).exists():
+        if Restaurant.objects.filter(name__iexact=name, area__iexact=area).exclude(id=restaurant.id).exists():
             request.session["restaurant_error"] = "Restaurant with this name already exists."
             return redirect("show_restaurant")
 
@@ -370,7 +374,7 @@ def update_restaurant(request, restaurant_id):
         restaurant.save()
 
         AdminActivity.objects.create(
-            action=f"Updated restaurant: {restaurant.name}"
+            action=f"Updated restaurant: {name} ({area})"
         )
 
     return redirect("show_restaurant")

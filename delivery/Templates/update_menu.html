@@ -4,53 +4,51 @@
 
 <div class="page-container menu-page">
 
-{% if items %}
-<!-- ================= TOP BAR ================= -->
-<div class="menu-topbar">
-  <h2>
-    Menu for {{ restaurant.name }}
-    <span class="muted">({{ items|length }} items)</span>
-  </h2>
+  {% if items %}
+  <!-- ================= TOP BAR ================= -->
+  <div class="menu-topbar">
+    <h2>
+      Menu for {{ restaurant.name }}
+      <span class="muted">({{ items|length }} items)</span>
+    </h2>
 
-  <div class="menu-tools">
-    <input type="text" id="menuSearch" placeholder="Search menu...">
+    <div class="menu-tools">
+      <input type="text" id="menuSearch" placeholder="Search menu...">
 
-    <select id="menuFilter">
-      <option value="all">All</option>
-      <option value="veg">Veg</option>
-      <option value="nonveg">Non-Veg</option>
-    </select>
+      <select id="menuFilter">
+        <option value="all">All</option>
+        <option value="veg">Veg</option>
+        <option value="nonveg">Non-Veg</option>
+      </select>
 
-    <button class="btn primary" onclick="openAddMenu()">
-      + Add Item
-    </button>
-  </div>
-</div>
-
-<!-- ================= MENU GRID ================= -->
-<div class="menu-grid">
-{% for item in items %}
-  <div class="menu-card">
-
-    <div class="menu-image">
-      <img src="{{ item.picture }}" alt="{{ item.name }}">
+      <button class="btn primary" onclick="openAddMenu()">
+        + Add Item
+      </button>
     </div>
+  </div>
 
-    <div class="menu-body">
-      <h4>{{ item.name }}</h4>
-      <p class="menu-desc">{{ item.description }}</p>
+  <!-- ================= MENU GRID ================= -->
+  <div class="menu-grid">
+    {% for item in items %}
+    <div class="menu-card">
 
-      <div class="menu-meta">
-        <span class="price">₹{{ item.price }}</span>
-        <span class="type {% if item.nonVeg %}nonveg{% else %}veg{% endif %}">
-          {% if item.nonVeg %}Non-Veg{% else %}Veg{% endif %}
-        </span>
+      <div class="menu-image">
+        <img src="{{ item.picture }}" alt="{{ item.name }}">
       </div>
 
-      <div class="menu-actions">
-        <button
-          class="btn ghost"
-          onclick="openEditMenu(
+      <div class="menu-body">
+        <h4>{{ item.name }}</h4>
+        <p class="menu-desc">{{ item.description }}</p>
+
+        <div class="menu-meta">
+          <span class="price">₹{{ item.price }}</span>
+          <span class="type {% if item.nonVeg %}nonveg{% else %}veg{% endif %}">
+            {% if item.nonVeg %}Non-Veg{% else %}Veg{% endif %}
+          </span>
+        </div>
+
+        <div class="menu-actions">
+          <button class="btn ghost" onclick="openEditMenu(
             '{{ item.id }}',
             '{{ item.name|escapejs }}',
             '{{ item.description|escapejs }}',
@@ -58,23 +56,23 @@
             '{{ item.price }}',
             '{{ item.nonVeg }}'
           )">
-          Edit
-        </button>
+            Edit
+          </button>
 
-        <a href="{% url 'delete_menu_item' item.id %}" class="btn danger">
-          Delete
-        </a>
+          <a href="{% url 'delete_menu_item' item.id %}" class="btn danger">
+            Delete
+          </a>
+        </div>
       </div>
+
     </div>
-
+    {% endfor %}
   </div>
-{% endfor %}
-</div>
 
-{% else %}
+  {% else %}
   <h2>Menu for {{ restaurant.name }}</h2>
   <p>No menu items yet.</p>
-{% endif %}
+  {% endif %}
 
 </div>
 
@@ -84,16 +82,16 @@
     <h3 id="modalTitle">Add New Menu Item</h3>
 
     {% if menu_error %}
-  <div class="form-msg error">
-    {{ menu_error }}
-  </div>
-{% endif %}
+    <div class="form-msg error">
+      {{ menu_error }}
+    </div>
+    {% endif %}
 
-{% if menu_success %}
-  <div class="form-msg success">
-    {{ menu_success }}
-  </div>
-{% endif %}
+    {% if menu_success %}
+    <div class="form-msg success">
+      {{ menu_success }}
+    </div>
+    {% endif %}
 
 
     <form id="menuForm" method="POST">
@@ -125,65 +123,65 @@
 
 <!-- ================= JS ================= -->
 <script>
-const form = document.getElementById("menuForm");
+  const form = document.getElementById("menuForm");
 
 
-/* ---------- ADD MODE ---------- */
-function openAddMenu() {
-  openModal("menuModal");
+  /* ---------- ADD MODE ---------- */
+  function openAddMenu() {
+    openModal("menuModal");
 
-  document.getElementById("modalTitle").innerText = "Add New Menu Item";
-  document.getElementById("menuSubmitBtn").innerText = "Add Menu";
+    document.getElementById("modalTitle").innerText = "Add New Menu Item";
+    document.getElementById("menuSubmitBtn").innerText = "Add Menu";
 
-  form.action = "{% url 'update_menu' restaurant.id %}";
-  form.reset();
-}
+    form.action = "{% url 'update_menu' restaurant.id %}";
+    form.reset();
+  }
 
-/* ---------- EDIT MODE ---------- */
-function openEditMenu(id, name, desc, pic, price, nonVeg) {
-  openModal("menuModal");
+  /* ---------- EDIT MODE ---------- */
+  function openEditMenu(id, name, desc, pic, price, nonVeg) {
+    openModal("menuModal");
 
-  document.getElementById("modalTitle").innerText = "Edit Menu Item";
-  document.getElementById("menuSubmitBtn").innerText = "Update Menu";
+    document.getElementById("modalTitle").innerText = "Edit Menu Item";
+    document.getElementById("menuSubmitBtn").innerText = "Update Menu";
 
-  document.getElementById("menuName").value = name;
-  document.getElementById("menuDescription").value = desc;
-  document.getElementById("menuPicture").value = pic;
-  document.getElementById("menuPrice").value = price;
-  document.getElementById("menuNonVeg").checked = (nonVeg === "True");
+    document.getElementById("menuName").value = name;
+    document.getElementById("menuDescription").value = desc;
+    document.getElementById("menuPicture").value = pic;
+    document.getElementById("menuPrice").value = price;
+    document.getElementById("menuNonVeg").checked = (nonVeg === "True");
 
-  form.action = `/menu/edit/${id}/`;
-}
+    form.action = `/menu/edit/${id}/`;
+  }
 
-/* ---------- SEARCH & FILTER ---------- */
-const searchInput = document.getElementById("menuSearch");
-const filterSelect = document.getElementById("menuFilter");
-const cards = document.querySelectorAll(".menu-card");
+  /* ---------- SEARCH & FILTER ---------- */
+  const searchInput = document.getElementById("menuSearch");
+  const filterSelect = document.getElementById("menuFilter");
+  const cards = document.querySelectorAll(".menu-card");
 
-function applyFilter() {
-  const search = searchInput.value.toLowerCase();
-  const filter = filterSelect.value;
+  function applyFilter() {
+    const search = searchInput.value.toLowerCase();
+    const filter = filterSelect.value;
 
-  cards.forEach(card => {
-    const name = card.querySelector("h4").innerText.toLowerCase();
-    const type = card.querySelector(".type").classList.contains("veg")
-      ? "veg" : "nonveg";
+    cards.forEach(card => {
+      const name = card.querySelector("h4").innerText.toLowerCase();
+      const type = card.querySelector(".type").classList.contains("veg")
+        ? "veg" : "nonveg";
 
-    const show =
-      name.includes(search) &&
-      (filter === "all" || filter === type);
+      const show =
+        name.includes(search) &&
+        (filter === "all" || filter === type);
 
-    card.style.display = show ? "flex" : "none";
-  });
-}
+      card.style.display = show ? "flex" : "none";
+    });
+  }
 
-searchInput.addEventListener("input", applyFilter);
-filterSelect.addEventListener("change", applyFilter);
+  searchInput.addEventListener("input", applyFilter);
+  filterSelect.addEventListener("change", applyFilter);
 
   {% if menu_error or menu_success %}
-    window.addEventListener("DOMContentLoaded", () => {
-      openModal("menuModal");
-    });
+  window.addEventListener("DOMContentLoaded", () => {
+    openModal("menuModal");
+  });
   {% endif %}
 </script>
 

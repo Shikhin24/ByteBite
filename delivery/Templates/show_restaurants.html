@@ -19,8 +19,8 @@
       <select id="cuisineFilter">
         <option value="">All cuisines</option>
         {% for c in cuisines %}
-  <option value="{{ c }}">{{ c }}</option>
-{% endfor %}
+        <option value="{{ c }}">{{ c }}</option>
+        {% endfor %}
 
       </select>
     </div>
@@ -44,26 +44,29 @@
           <span class="rating">⭐ {{ r.rating }}</span>
         </div>
 
+        <div class="location-row">
+          {% if r.location_url %}
+          <a href="{{ r.location_url }}" target="_blank" class="location-btn">
+            📍 {{ r.area }}
+          </a>
+          {% else %}
+          <span class="location-placeholder">{{ r.area }}</span>
+          {% endif %}
+        </div>
+
+
         <div class="card-actions">
           <!-- EDIT -->
-          <button
-            type="button"
-            class="btn ghost edit-btn"
-            data-id="{{ r.id }}"
-            data-name="{{ r.name }}"
-            data-picture="{{ r.picture }}"
-            data-cuisine="{{ r.cuisine }}"
-            data-rating="{{ r.rating }}"
-            data-location="{{ r.location_url|default_if_none:'' }}"
-          >
+          <button type="button" class="btn ghost edit-btn" data-id="{{ r.id }}" data-name="{{ r.name }}"
+            data-area="{{ r.area }}" data-picture="{{ r.picture }}" data-cuisine="{{ r.cuisine }}"
+            data-rating="{{ r.rating }}" data-location="{{ r.location_url|default_if_none:'' }}">
             Edit
           </button>
 
           <form action="{% url 'delete_restaurant' r.id %}" method="post">
-  {% csrf_token %}
-  <button type="submit" class="btn danger">Delete</button>
-</form>
-
+            {% csrf_token %}
+            <button type="submit" class="btn danger">Delete</button>
+          </form>
 
           <a href="{% url 'open_update_menu' r.id %}" class="btn ghost">
             Menu
@@ -86,16 +89,14 @@
       <label>Name</label>
       <input type="text" name="name" id="editName" required>
 
+      <label>Area</label>
+      <input type="text" name="area" id="editArea" required>
+
       <label>Image URL</label>
       <input type="url" name="picture" id="editPicture" required>
 
       <label>Location</label>
-      <input
-        type="url"
-        name="location_url"
-        id="editLocation"
-        placeholder="https://maps.google.com/..."
-      >
+      <input type="url" name="location_url" id="editLocation" placeholder="https://maps.google.com/...">
 
       <label>Cuisine</label>
       <input type="text" name="cuisine" id="editCuisine" required>
@@ -111,74 +112,76 @@
 <!-- ================= JS ================= -->
 
 <script>
-/* OPEN EDIT MODAL */
-function openRestaurantEdit(id, name, picture, cuisine, rating, location) {
-  document.getElementById("editName").value = name;
-  document.getElementById("editPicture").value = picture;
-  document.getElementById("editCuisine").value = cuisine;
-  document.getElementById("editRating").value = rating;
-  document.getElementById("editLocation").value = location || "";
+  /* OPEN EDIT MODAL */
+  function openRestaurantEdit(id, name, area, picture, cuisine, rating, location) {
+    document.getElementById("editName").value = name;
+    document.getElementById("editArea").value = area;
+    document.getElementById("editPicture").value = picture;
+    document.getElementById("editCuisine").value = cuisine;
+    document.getElementById("editRating").value = rating;
+    document.getElementById("editLocation").value = location || "";
 
-  document.getElementById("restaurantEditForm").action =
-    `/restaurant/${id}/update_restaurant/`;
+    document.getElementById("restaurantEditForm").action =
+      `/restaurant/${id}/update_restaurant/`;
 
-  openModal("restaurantModal");
-}
-
-/* EDIT BUTTON HANDLER */
-document.querySelectorAll(".edit-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    openRestaurantEdit(
-      btn.dataset.id,
-      btn.dataset.name,
-      btn.dataset.picture,
-      btn.dataset.cuisine,
-      btn.dataset.rating,
-      btn.dataset.location
-    );
-  });
-});
-
-/* CLOSE MODAL */
-document.getElementById("restaurantModal").addEventListener("click", e => {
-  if (e.target.id === "restaurantModal") {
-    e.target.classList.remove("active");
+    openModal("restaurantModal");
   }
-});
+
+  /* EDIT BUTTON HANDLER */
+  document.querySelectorAll(".edit-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      openRestaurantEdit(
+        btn.dataset.id,
+        btn.dataset.name,
+        btn.dataset.area,
+        btn.dataset.picture,
+        btn.dataset.cuisine,
+        btn.dataset.rating,
+        btn.dataset.location
+      );
+    });
+  });
+
+  /* CLOSE MODAL */
+  document.getElementById("restaurantModal").addEventListener("click", e => {
+    if (e.target.id === "restaurantModal") {
+      e.target.classList.remove("active");
+    }
+  });
 </script>
 
 <script>
-/* FILTER */
-const searchInput = document.getElementById("searchInput");
-const cuisineFilter = document.getElementById("cuisineFilter");
-const cards = document.querySelectorAll(".restaurant-card");
-const count = document.getElementById("restaurantCount");
+  /* FILTER */
+  const searchInput = document.getElementById("searchInput");
+  const cuisineFilter = document.getElementById("cuisineFilter");
+  const cards = document.querySelectorAll(".restaurant-card");
+  const count = document.getElementById("restaurantCount");
 
-function filterRestaurants() {
-  let visible = 0;
-  const search = searchInput.value.toLowerCase();
-  const cuisine = cuisineFilter.value.toLowerCase();
+  function filterRestaurants() {
+    let visible = 0;
+    const search = searchInput.value.toLowerCase();
+    const cuisine = cuisineFilter.value.toLowerCase();
 
-  cards.forEach(card => {
-    const name = card.querySelector("h3").innerText.toLowerCase();
-    const pill = card.querySelector(".pill").innerText.toLowerCase();
+    cards.forEach(card => {
+      const name = card.querySelector("h3").innerText.toLowerCase();
+      const pill = card.querySelector(".pill").innerText.toLowerCase();
 
-    const matchSearch = name.includes(search);
-    const matchCuisine = !cuisine || pill === cuisine;
+      const matchSearch = name.includes(search);
+      const matchCuisine = !cuisine || pill === cuisine;
 
-    if (matchSearch && matchCuisine) {
-      card.style.display = "";
-      visible++;
-    } else {
-      card.style.display = "none";
-    }
-  });
+      if (matchSearch && matchCuisine) {
+        card.style.display = "";
+        visible++;
+      } else {
+        card.style.display = "none";
+      }
+    });
 
-  count.innerText = visible;
-}
+    count.innerText = visible;
+  }
 
-searchInput.addEventListener("input", filterRestaurants);
-cuisineFilter.addEventListener("change", filterRestaurants);
+  searchInput.addEventListener("input", filterRestaurants);
+  cuisineFilter.addEventListener("change", filterRestaurants);
 </script>
 
 {% endblock %}

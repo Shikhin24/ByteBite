@@ -208,13 +208,9 @@ button {
 /* ===============================
    LAYOUT
 ================================ */
-.page {
-  min-height: 100vh;
-}
-
 .auth-layout {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
 }
 
 /* ===============================
@@ -981,11 +977,7 @@ input[type="number"] {
   padding: 10px 5px;
 }
 
-@media (max-width: 768px) {
-  .page-container {
-    padding: 20px;
-  }
-}
+
 
 /* ===============================
    RESTAURANT TOP BAR
@@ -1830,7 +1822,6 @@ body.modal-open #themeToggle {
   opacity: 0.85;
 }
 
-.page,
 .page-container,
 .menu-page,
 .cart-page,
@@ -2278,7 +2269,82 @@ body.modal-open #themeToggle {
     text-align: center !important;
     justify-content: center !important;
   }
+
+    /* Modal container */
+  .modal-card {
+    padding: 14px;                 /* ↓ from 24px */
+    max-height: 90vh;              /* prevent top/bottom overflow */
+    overflow-y: auto;              /* scroll inside modal if needed */
+  }
+
+  /* Form spacing */
+  .modal-card form {
+    gap: 6px;                      /* ↓ from 12px */
+  }
+
+  /* Labels */
+  .modal-card label {
+    margin-top: 4px;               /* ↓ from var(--space-2) */
+    font-size: 11px;               /* slightly smaller */
+    letter-spacing: 0.04em;
+  }
+
+  /* Inputs */
+  .modal-card input,
+  .modal-card textarea {
+    padding: 6px 8px;              /* ↓ vertical padding */
+    font-size: 12px;
+  }
+
+  /* Heading */
+  .modal-card h3 {
+    margin-bottom: 8px;            /* ↓ from default */
+    font-size: 14px;
+  }
+
+  /* Submit button */
+  .modal-card button {
+    margin-top: 10px;              /* ↓ from 16px */
+    padding: 8px;
+    font-size: 12px;
+  }
+
+    /* Auth card only (login / signup) */
+  .auth-layout .card {
+    max-height: 88vh;          /* keep inside viewport */
+    overflow-y: auto;          /* scroll INSIDE card */
+    padding-bottom: 16px;      /* breathing room for button */
+  }
+
+  /* Reduce spacing between fields further */
+  .auth-layout label {
+    margin-top: 4px;           /* tighter labels */
+    font-size: 11px;
+  }
+
+  .auth-layout input,
+  .auth-layout textarea {
+    padding: 6px 8px;       
+    font-size: 12px;
+  }
+
+  /* Signup / Signin button */
+  .auth-layout button[type="submit"] {
+    margin-top: 12px;
+    padding: 8px;
+    font-size: 12px;
+    position: sticky;         
+    bottom: 0;
+    background: var(--button-bg);
+    z-index: 2;
+  }
+
+  .auth-page {
+    overflow: hidden;
+    height: 100dvh;
+  }
   
 }
+
 
 

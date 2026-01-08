@@ -1,14 +1,13 @@
 document.addEventListener("DOMContentLoaded", () => {
 
   function checkEmptyCart() {
-  const rows = document.querySelectorAll("table.data-table tr[data-item-id]");
+    const rows = document.querySelectorAll("table.data-table tr[data-item-id]");
 
-  if (rows.length === 0) {
-    document.getElementById("cart-content").style.display = "none";
-    document.getElementById("empty-cart").style.display = "block";
+    if (rows.length === 0) {
+      document.getElementById("cart-content").style.display = "none";
+      document.getElementById("empty-cart").style.display = "block";
+    }
   }
-}
-
 
   const csrfMeta = document.querySelector('meta[name="csrf-token"]');
   if (!csrfMeta) {
@@ -31,19 +30,19 @@ document.addEventListener("DOMContentLoaded", () => {
         method: 'POST',
         headers: { 'X-CSRFToken': csrftoken }
       })
-      .then(res => res.json())
-      .then(data => {
-        if (data.quantity === 0) {
-          row.remove();
-          checkEmptyCart();
-        } else {
-          row.querySelector('.qty').innerText = data.quantity;
-        }
+        .then(res => res.json())
+        .then(data => {
+          if (data.quantity === 0) {
+            row.remove();
+            checkEmptyCart();
+          } else {
+            row.querySelector('.qty').innerText = data.quantity;
+          }
 
-        document.getElementById('total-qty').innerText = data.total_qty;
-        document.getElementById('total-price').innerText = data.total_price;
-      })
-      .catch(err => console.error(err));
+          document.getElementById('total-qty').innerText = data.total_qty;
+          document.getElementById('total-price').innerText = data.total_price;
+        })
+        .catch(err => console.error(err));
     }
 
     // Remove item
@@ -56,22 +55,19 @@ document.addEventListener("DOMContentLoaded", () => {
         method: 'POST',
         headers: { 'X-CSRFToken': csrftoken }
       })
-      .then(res => res.json())
-      .then(data => {
-        row.remove();
-        checkEmptyCart();
-        
-        document.getElementById('total-qty').innerText = data.total_qty;
-        document.getElementById('total-price').innerText = data.total_price;
+        .then(res => res.json())
+        .then(data => {
+          row.remove();
+          checkEmptyCart();
 
-      })
-      .catch(err => console.error(err));
-      
+          document.getElementById('total-qty').innerText = data.total_qty;
+          document.getElementById('total-price').innerText = data.total_price;
+
+        })
+        .catch(err => console.error(err));
+
     }
 
   });
 
 });
-
-
-

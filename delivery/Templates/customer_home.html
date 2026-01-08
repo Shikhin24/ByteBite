@@ -11,37 +11,33 @@
     </div>
 
     <div class="top-right">
-  <input
-    type="text"
-    id="restaurant-search"
-    placeholder="Search restaurants..."
-  />
+      <input type="text" id="restaurant-search" placeholder="Search restaurants..." />
 
-  <select id="cuisine-filter">
-    <option value="all">All Cuisines</option>
-    <option value="burger">Burger</option>
-    <option value="vegetarian">Vegetarian</option>
-    <option value="biryani">Biryani</option>
-    <option value="chinese">Chinese</option>
-  </select>
+      <select id="cuisine-filter">
+        <option value="all">All Cuisines</option>
+        <option value="burger">Burger</option>
+        <option value="vegetarian">Vegetarian</option>
+        <option value="biryani">Biryani</option>
+        <option value="chinese">Chinese</option>
+      </select>
 
-  <select id="rating-filter">
-    <option value="0">All Ratings</option>
-    <option value="4">4★ & above</option>
-    <option value="4.5">4.5★ & above</option>
-  </select>
+      <select id="rating-filter">
+        <option value="0">All Ratings</option>
+        <option value="4">4★ & above</option>
+        <option value="4.5">4.5★ & above</option>
+      </select>
 
-  <a href="{% url 'view_cart' %}" class="cart-btn">
-    🛒 Cart <span id="cart-count">{{ cart_count }}</span>
-  </a>
+      <a href="{% url 'view_cart' %}" class="cart-btn">
+        🛒 Cart <span id="cart-count">{{ cart_count }}</span>
+      </a>
 
-<form action="{% url 'logout' %}" method="post">
-  {% csrf_token %}
-  <button type="submit" class="btn ghost">Logout</button>
-</form>
+      <form action="{% url 'logout' %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn ghost">Logout</button>
+      </form>
 
 
-</div>
+    </div>
 
   </div>
 
@@ -61,14 +57,14 @@
         </div>
 
         <div class="location-row">
-  {% if r.location_url %}
-    <a href="{{ r.location_url }}" target="_blank" class="location-btn">
-      📍 Location
-    </a>
-  {% else %}
-    <span class="location-placeholder">Location not available</span>
-  {% endif %}
-</div>
+          {% if r.location_url %}
+          <a href="{{ r.location_url }}" target="_blank" class="location-btn">
+            📍 {{ r.area }}
+          </a>
+          {% else %}
+          <span class="location-placeholder">Location not available</span>
+          {% endif %}
+        </div>
 
 
       </div>
@@ -140,6 +136,5 @@
     });
   });
 </script>
-
 
 {% endblock %}

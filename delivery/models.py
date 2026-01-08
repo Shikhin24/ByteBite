@@ -13,11 +13,15 @@ class User(models.Model):
         return self.username
     
 class Restaurant(models.Model):
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100)
+    area = models.CharField(max_length=100)
     picture = models.URLField()
     cuisine = models.CharField(max_length=200)
     rating = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(5)])
     location_url = models.URLField(blank=True, null=True)
+    
+    class Meta:
+        unique_together = ('name', 'area')
     
     def __str__(self):
         return self.name
