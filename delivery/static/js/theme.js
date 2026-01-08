@@ -22,8 +22,15 @@
 
     toggleBtn.addEventListener("click", () => {
       const current = document.documentElement.dataset.theme;
+
+      // 🔑 trigger animation
+      toggleBtn.classList.remove("spin");
+      void toggleBtn.offsetWidth;
+      toggleBtn.classList.add("spin");
+
       setTheme(current === "dark" ? "light" : "dark");
     });
+
   });
 
   // ✅ Runs on back/forward cache restore

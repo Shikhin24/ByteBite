@@ -736,6 +736,10 @@ textarea:focus {
   color: var(--text);
 }
 
+.page-container .restaurant-card .location-row {
+  margin-bottom: 8px;
+}
+
 /* ===============================
    ADD RESTAURANT PAGE
 ================================ */
