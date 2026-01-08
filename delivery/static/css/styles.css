@@ -1829,3 +1829,456 @@ body.modal-open #themeToggle {
   font-weight: 600;
   opacity: 0.85;
 }
+
+.page,
+.page-container,
+.menu-page,
+.cart-page,
+.admin-layout {
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* =====================================================
+   📱 MOBILE & TABLET – FINAL STABLE FIX
+   Focus: Cart usability, alignment, consistency
+===================================================== */
+
+@media (max-width: 768px) {
+
+  /* ===============================
+     GLOBAL SCALE (SAFE)
+  ================================ */
+  body {
+    font-size: 13px;
+  }
+
+  h1 { font-size: 18px !important; }
+  h2 { font-size: 16px !important; }
+  h3, h4 { font-size: 14px !important; }
+  p { font-size: 12px; }
+
+  /* ===============================
+     AUTH – FORCE PERFECT CENTER
+  ================================ */
+  .auth-layout {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+  .card {
+    width: calc(100% - 24px);
+    max-width: 320px;
+    margin: 0 auto;
+  }
+
+  /* ===============================
+     RESTAURANT & MENU GRIDS
+     (2 columns, consistent spacing)
+  ================================ */
+  .restaurant-grid,
+  .menu-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .restaurant-card,
+  .menu-card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .restaurant-body,
+  .menu-body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .restaurant-image {
+    height: 120px;
+  }
+
+  .menu-image {
+    height: 88px;
+  }
+
+  /* ===============================
+   RESTAURANT CARD – COMPACT FIX
+================================ */
+
+.restaurant-card {
+  height: auto;
+}
+
+.restaurant-body {
+  padding: 8px;              /* tighter */
+  gap: 4px;                  /* less vertical space */
+}
+
+/* Title */
+.restaurant-body h3 {
+  font-size: 13px;
+  line-height: 1.2;
+  margin: 0;
+}
+
+/* Cuisine + rating row */
+.meta {
+  margin: 4px 0;
+  font-size: 11px;
+}
+
+/* Cuisine pill */
+.restaurant-body .pill {
+  padding: 2px 6px;
+  font-size: 10px;
+}
+
+/* 🔑 FORCE SAME SPACE FOR LOCATION ROW */
+.location-row {
+  min-height: 34px;          /* equal space for all cards */
+  margin-top: auto;          /* push to bottom */
+}
+
+/* Location button / placeholder */
+.location-btn,
+.location-placeholder {
+  padding: 4px 8px;
+  font-size: 11px;
+}
+
+
+  /* ===============================
+     MENU CARD CONTENT TIGHTENING
+  ================================ */
+  .menu-body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+    
+  }
+
+  .menu-body h4 {
+  line-height: 1.1;
+  margin: 0;
+  }
+
+  .menu-card .menu-body h4 {
+  font-size: 12px !important;   /* 🔑 FORCE override */
+  line-height: 1.1;
+  margin: 0;
+}
+
+  .menu-desc {
+  font-size: 10px;
+  line-height: 1.25;
+  }
+
+.menu-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;      /* 🔑 pushes meta to bottom zone */
+}
+
+  .type {
+  font-size: 10px;
+  padding: 2px 6px;
+  white-space: nowrap;
+  }
+
+  /* Buttons inside cards */
+.menu-actions {
+  margin-top: 0px;       /* consistent gap */
+}
+
+  .menu-actions .btn,
+  .card-actions .btn {
+  flex: 1;
+  padding: 4px 0;
+  font-size: 10px;
+  text-align: center;
+  }
+
+  .menu-card {
+  height: auto;
+}
+
+  /* ===============================
+     TOP BARS – UNSQUISH
+  ================================ */
+  .menu-tools,
+  .top-right {
+  display: flex;              /* 🔑 */
+  flex-wrap: wrap;            /* 🔑 */
+  gap: 8px;
+  align-items: center;
+  }
+
+  .menu-tools input,
+  .menu-tools select,
+  .top-right input,
+  .top-right select {
+  width: auto;    
+  min-width: 140px;         
+  padding: 4px 8px;
+  font-size: 12px;
+  }
+
+  .cart-btn {
+  width: fit-content;        
+  padding: 4px 10px;
+  font-size: 11px;
+  }
+
+.top-right .btn {
+  width: fit-content;
+  padding: 4px 10px;
+  font-size: 11px;
+}
+
+.restaurant-topbar,
+.customer-topbar,
+.menu-topbar {
+  width: 100%;
+  padding-left: 8px;
+  padding-right: 8px;
+  box-sizing: border-box;
+}
+
+  /* ===============================
+     CART PAGE – FIXED & SMALL
+  ============================== */
+  .data-table {
+    display: block;
+    overflow-x: auto;
+      table-layout: fixed;   /* 🔑 THIS IS THE KEY */
+  width: 100%;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 4px 6px;
+    font-size: 11px;
+  }
+    .data-table th:nth-child(4) {
+    font-size: 0;        /* hides text */
+    padding: 0;
+  }
+
+  .data-table td:nth-child(2) {
+  padding: 4px;
+}
+
+  .item-cell {
+    gap: 8px;
+  }
+
+  .cart-item-img {
+    width: 32px;
+    height: 32px;
+  }
+
+  /* quantity buttons FIX */
+  .qty-btn {
+    width: 22px;
+    height: 22px;
+    font-size: 13px;
+  }
+
+  .qty {
+    font-size: 12px;
+    min-width: 16px;
+  }
+
+  .cart-summary {
+  flex-direction: row;  
+  justify-content:space-around;
+  gap: 12px;
+  flex-wrap: wrap;
+  }
+
+  #checkout-btn {
+  width: 100%;       
+  max-width: 100%;
+  }
+
+  .price {
+    margin: 2px 0;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .type {
+    margin: 2px 0;
+    padding: 2px 6px;
+  }
+  /* ===============================
+     THEME BUTTON – HIDE ON SCROLL
+     (CSS-only version)
+  ================================ */
+  body:has(.page:hover) #themeToggle {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+    /* Hide text inside remove button */
+  .data-table .btn.danger {
+    padding: 0;
+    width: 24px;
+    height: 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 0;          
+    
+    border: none;
+    box-shadow: none;
+  }
+
+    .data-table .btn.danger::before {
+    content: "✕";            /* ❌ symbol */
+    font-size: 10px;
+    font-weight: 700;
+    color: #ff4d4d;
+    
+  }
+
+  .data-table .btn.danger:hover::before {
+    color: #ff1f1f;
+  }
+
+.modal,
+.modal-overlay,
+.popup {
+  padding: 40px;         
+  box-sizing: border-box;
+}
+
+  /* ===============================
+     ADMIN – FONT SCALE (FORCED)
+  =============================== */
+
+  /* Page base */
+  .admin-page,
+  .dashboard-page {
+    font-size: 12px !important;
+  }
+
+  /* Main headings */
+  .admin-page h1,
+  .dashboard-page h1 {
+    font-size: 18px !important;
+    line-height: 1.2;
+  }
+
+  /* Section titles */
+  .admin-page h2,
+  .dashboard-page h2 {
+    font-size: 14px !important;
+    margin-bottom: 4px;
+  }
+
+  /* Card titles */
+  .admin-card h3,
+  .dashboard-card h3 {
+    font-size: 12px !important;
+    line-height: 1.2;
+  }
+
+  /* Card text */
+  .admin-card p,
+  .dashboard-card p {
+    font-size: 10px !important;
+    line-height: 1.3;
+  }
+
+  /* Numbers (3 restaurants, 4 items) */
+  .admin-card .count,
+  .stat-number {
+    font-size: 20px !important;
+  }
+
+  /* Buttons */
+  .admin-page .btn,
+  .dashboard-page .btn {
+    font-size: 10px !important;
+    padding: 6px 10px;
+  }
+
+
+  /* ===============================
+     ADMIN – MOBILE LAYOUT FIX
+  =============================== */
+
+  /* Stack main + sidebar vertically */
+  .admin-dashboard {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px;
+  }
+
+  /* Sidebar should NOT be narrow */
+  .admin-sidebar {
+    width: 100% !important;
+    max-width: 100% !important;
+    order: 2;               /* move below main content */
+  }
+
+  /* Recent Activity card */
+  .admin-panel {
+    width: 100% !important;
+    padding: 12px;
+  }
+
+  /* Limit height so it doesn’t look endless */
+  .admin-panel ul {
+    max-height: 200px;      /* scroll instead of stretching */
+    overflow-y: auto;
+  }
+
+  /* Make list readable on mobile */
+  .admin-panel li {
+    font-size: 11px;
+    line-height: 1.4;
+    margin-bottom: 6px;
+  }
+
+    .btn.danger {
+    padding: 4px !important;   /* 🔑 extra breathing room */
+  }
+
+  /* Main auth card */
+  .auth-layout .card,
+  .auth-card {
+    width: 100% !important;
+    max-width: 300px !important; 
+    padding: 18px !important;     
+    margin: auto;
+  }
+
+  /* Submit button */
+  .auth-layout button[type="submit"] {
+    padding: 8px !important;
+    font-size: 12px !important;
+  }
+
+    .toast,
+  .toast-message,
+  .toast-container > div {
+    font-size: 10px !important;     /* 🔑 smaller text */
+    line-height: 1.3;
+    padding: 8px 10px !important;   /* 🔑 reduce box size */
+    max-width: 260px !important;    /* 🔑 prevent wide toast */
+    text-align: center !important;
+    justify-content: center !important;
+  }
+  
+}
+
+
