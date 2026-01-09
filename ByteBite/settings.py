@@ -30,6 +30,10 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://bytebite-fplc.onrender.com",
+]
+
 
 # Application definition
 
