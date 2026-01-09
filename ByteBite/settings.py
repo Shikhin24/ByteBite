@@ -29,6 +29,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
+ALLOWED_HOSTS = [h.strip() for h in ALLOWED_HOSTS if h.strip()]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://bytebite-fplc.onrender.com",
