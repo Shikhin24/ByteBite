@@ -40,7 +40,6 @@ def customer_required(view_func):
 
 @never_cache
 def index(request):
-    return HttpResponse("INDEX OK")
     context = {
         'login_error': request.session.pop('login_error', None),
         'signup_error': request.session.pop('signup_error', None),
