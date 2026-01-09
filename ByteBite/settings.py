@@ -32,6 +32,8 @@ CSRF_TRUSTED_ORIGINS = [
     "https://bytebite-fplc.onrender.com",
 ]
 
+DEBUG = True
+
 
 # Application definition
 
