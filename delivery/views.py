@@ -35,13 +35,6 @@ def index(request):
     }
     return render(request, "index.html", context)
 
-
-def open_signup(request):
-    return render(request, "signup.html")
-
-def open_signin(request):
-    return render(request, "signin.html")
-
 def signup(request):
     if request.method == 'POST':
         username = request.POST.get('username', '').strip()
@@ -52,6 +45,12 @@ def signup(request):
 
         if not username or not password or not email:
             request.session['signup_error'] = 'All fields are mandatory.'
+            request.session['active_tab'] = 'signup'
+            return redirect('/')
+        
+        # 🔑 Password length validation
+        if len(password) < 8 or len(password) > 20:
+            request.session['signup_error'] = 'Password must be between 8 and 20 characters.'
             request.session['active_tab'] = 'signup'
             return redirect('/')
 

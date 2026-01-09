@@ -2350,5 +2350,27 @@ body.modal-open #themeToggle {
   
 }
 
+/* Password hint for signup */
+
+/* 🔑 FORCE password strength colors */
+.card .password-hint {
+  display: block;
+  margin-top: 2px;
+}
+
+.card .password-hint.weak {
+  color: #ff4d4d !important;
+}
+
+.card .password-hint.medium {
+  color: #f1c40f !important;
+}
+
+.card .password-hint.strong {
+  color: #2ecc71 !important;
+}
+
+
+
 
 

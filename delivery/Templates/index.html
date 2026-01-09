@@ -50,7 +50,7 @@
 
             <label for="signinPassword">Password</label>
             <div class="password-field">
-              <input type="password" name="password" id="signinPassword" autocomplete="current-password">
+              <input type="password" name="password" id="signinPassword"  minlength="8" maxlength="20" required>
 
               <button type="button" class="toggle-password" data-target="signinPassword"
                 aria-label="Toggle password visibility">
@@ -88,7 +88,7 @@
 
             <label for="signupPassword">Password</label>
             <div class="password-field">
-              <input type="password" name="password" id="signupPassword" autocomplete="new-password">
+              <input type="password" name="password" id="signupPassword" minlength="8" maxlength="20" required>
 
               <button type="button" class="toggle-password" data-target="signupPassword"
                 aria-label="Toggle password visibility">
@@ -103,6 +103,7 @@
                 </svg>
               </button>
             </div>
+            <small id="passwordHint" class="password-hint"></small>
 
             <label for="signup-email">Email</label>
             <input id="signup-email" type="email" name="email" autocomplete="email">
@@ -132,5 +133,34 @@
     if (password) password.value = "";
   });
 </script>
+
+<script>
+  const pwd = document.getElementById("signupPassword");
+  const hint = document.getElementById("passwordHint");
+
+  pwd.addEventListener("input", () => {
+    const val = pwd.value;
+
+    let strength = 0;
+    if (val.length >= 8) strength++;
+    if (/[A-Z]/.test(val)) strength++;
+    if (/[0-9]/.test(val)) strength++;
+    if (/[^A-Za-z0-9]/.test(val)) strength++;
+
+    hint.classList.remove("weak", "medium", "strong");
+
+    if (strength <= 1) {
+      hint.textContent = "Weak password";
+      hint.classList.add("weak");
+    } else if (strength <= 3) {
+      hint.textContent = "Medium strength password";
+      hint.classList.add("medium");
+    } else {
+      hint.textContent = "Strong password";
+      hint.classList.add("strong");
+    }
+  });
+</script>
+
 
 {% endblock %}
