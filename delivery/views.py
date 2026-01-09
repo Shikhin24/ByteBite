@@ -7,6 +7,19 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 import razorpay
 from .models import AdminActivity, Cart, CartItem, Item, Restaurant, User
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import check_password
+
+def get_logged_in_user(request):
+    username = request.session.get("username")
+    if not username:
+        return None
+    try:
+        return User.objects.get(username=username)
+    except User.DoesNotExist:
+        request.session.flush()
+        return None
+
 
 def admin_required(view_func):
     @wraps(view_func)
@@ -61,7 +74,7 @@ def signup(request):
 
         User.objects.create(
             username=username,
-            password=password,
+            password=make_password(password),
             email=email,
             mobile=mobile,
             address=address
@@ -82,7 +95,9 @@ def signin(request):
             return redirect('/')
 
         try:
-            user = User.objects.get(email=email, password=password)
+            user = User.objects.get(email=email)
+            if not check_password(password, user.password):
+                raise User.DoesNotExist
 
             if user.username == 'admin':
                 request.session['is_admin'] = True
@@ -307,7 +322,10 @@ def view_menu(request, restaurant_id):
     cart_count = 0
 
     if request.session.get('username'):
-        user = User.objects.get(username=request.session['username'])
+        user = get_logged_in_user(request)
+        if not user:
+            return redirect("/")
+
         cart = Cart.objects.filter(customer=user).first()
 
         if cart:
@@ -393,7 +411,10 @@ def delete_restaurant(request, restaurant_id):
 @customer_required
 def add_to_cart(request, item_id):
     if request.method == 'POST':
-        user = User.objects.get(username=request.session['username'])
+        user = get_logged_in_user(request)
+        if not user:
+            return redirect("/")
+
         item = Item.objects.get(id=item_id)
         item_restaurant = item.restaurant
 
@@ -435,7 +456,10 @@ def add_to_cart(request, item_id):
 @customer_required
 def remove_from_cart(request, item_id):
     if request.method == 'POST':
-        user = User.objects.get(username=request.session['username'])
+        user = get_logged_in_user(request)
+        if not user:
+            return redirect("/")
+
         cart = Cart.objects.get(customer=user)
 
         CartItem.objects.filter(cart=cart, item_id=item_id).delete()
@@ -457,14 +481,17 @@ def remove_from_cart(request, item_id):
 @never_cache
 @customer_required
 def view_cart(request):
+    if not settings.RAZORPAY_KEY_ID or not settings.RAZORPAY_KEY_SECRET:
+        return JsonResponse({"error": "Payment disabled"}, status=503)
+
     if request.session.get("payment_done"):
         return redirect("customer_home")
-    
-    if not request.session.get('username'):
-        return redirect('/')
 
     username = request.session['username']
-    user = User.objects.get(username=username)
+    user = get_logged_in_user(request)
+    if not user:
+        return redirect("/")
+    
     cart = Cart.objects.filter(customer=user).first()
 
     total_quantity = 0
@@ -482,7 +509,10 @@ def view_cart(request):
 @customer_required
 def update_quantity(request, item_id, action):
     if request.method == 'POST':
-        user = User.objects.get(username=request.session['username'])
+        user = get_logged_in_user(request)
+        if not user:
+            return redirect("/")
+
         cart = Cart.objects.get(customer=user)
         cart_item = CartItem.objects.get(cart=cart, item_id=item_id)
 
@@ -508,7 +538,12 @@ def update_quantity(request, item_id, action):
 @never_cache
 @customer_required      
 def checkout(request, username):
-    customer = get_object_or_404(User, username=username)
+    if not settings.RAZORPAY_KEY_ID or not settings.RAZORPAY_KEY_SECRET:
+        return JsonResponse({"error": "Payment disabled"}, status=503)
+    
+    customer = get_logged_in_user(request)
+    if not customer:
+        return redirect("/")
     cart = Cart.objects.filter(customer=customer).first()
 
     if not cart:
@@ -528,6 +563,9 @@ razorpay_client = razorpay.Client(
 
 @csrf_exempt
 def payment_success(request):
+    if not settings.RAZORPAY_KEY_ID or not settings.RAZORPAY_KEY_SECRET:
+        return JsonResponse({"status": "failed"}, status=503)
+    
     try:
         data = json.loads(request.body)
 
@@ -556,7 +594,10 @@ def cart_status(request):
     if not request.session.get('username'):
         return JsonResponse({"items": [], "total_qty": 0})
 
-    user = User.objects.get(username=request.session['username'])
+    user = get_logged_in_user(request)
+    if not user:
+        return redirect("/")
+
     cart = Cart.objects.filter(customer=user).first()
 
     if not cart:
