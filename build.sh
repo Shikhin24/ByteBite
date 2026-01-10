@@ -2,11 +2,11 @@
 set -o errexit
 
 pip install -r requirements.txt
+
 python manage.py collectstatic --noinput
 python manage.py migrate
+
 python manage.py createsuperuser --noinput || true
 
-python manage.py createsuperuser \
-  --username admin \
-  --email shikhinrg246@gmail.com \
-  --noinput || true
+# Seed restaurants & menu data
+python manage.py seed_data || true
