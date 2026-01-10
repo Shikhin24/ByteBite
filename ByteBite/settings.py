@@ -27,10 +27,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: don't run with debug turned on in production!
 SECRET_KEY = os.getenv("SECRET_KEY")
 
-ALLOWED_HOSTS = ["bytebite-fplc.onrender.com", "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["bytebite-0tal.onrender.com", "localhost", "127.0.0.1"]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://bytebite-fplc.onrender.com",
+    "https://bytebite-0tal.onrender.com",
 ]
 
 DEBUG = os.getenv("DEBUG", "False") == "True"
