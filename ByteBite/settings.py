@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 import os
+import dj_database_url
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -32,7 +33,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://bytebite-fplc.onrender.com",
 ]
 
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
 
 # Application definition
@@ -83,10 +84,11 @@ WSGI_APPLICATION = 'ByteBite.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=os.getenv("DATABASE_URL"),
+        conn_max_age=600,
+        ssl_require=True
+    )
 }
 
 
