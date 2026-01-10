@@ -38,8 +38,10 @@ path('menu/edit/<int:item_id>/', views.edit_menu_item, name='edit_menu_item'),
     path('remove-from-cart/<int:item_id>/', views.remove_from_cart, name='remove_from_cart'),
     path('cart/', views.view_cart, name='view_cart'),
     path('update-quantity/<int:item_id>/<str:action>/', views.update_quantity, name='update_quantity'),
-    path('checkout/<str:username>/', views.checkout, name='checkout'),
+    path('checkout/', views.checkout, name='checkout'),
     path('payment-success/', views.payment_success, name='payment_success'),
     path("cart/status/", views.cart_status, name="cart_status"),
 
 ]
+handler404 = "django.views.defaults.page_not_found"
+handler500 = "django.views.defaults.server_error"

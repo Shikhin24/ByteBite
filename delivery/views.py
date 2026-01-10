@@ -143,19 +143,31 @@ def admin_home(request):
 @never_cache
 @customer_required
 def customer_home(request):
-    request.session.pop("payment_done", None)
-    if not request.session.get('username'):
-        return redirect('/')
-
     restaurantList = Restaurant.objects.all()
     username = request.session.get('username')
+
+    cuisines = (
+        Restaurant.objects
+        .values_list("cuisine", flat=True)
+        .distinct()
+        .order_by("cuisine")
+    )
+    
+    ratings = (
+        Restaurant.objects
+        .values_list("rating", flat=True)
+        .distinct()
+        .order_by("-rating")
+    )
 
     return render(
         request,
         'customer_home.html',
         {
             'restaurantList': restaurantList,
-            'username': username
+            'username': username,
+            'cuisines': cuisines,
+            'ratings': ratings,
         }
     )
 

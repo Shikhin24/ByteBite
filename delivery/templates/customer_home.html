@@ -15,16 +15,16 @@
 
       <select id="cuisine-filter">
         <option value="all">All Cuisines</option>
-        <option value="burger">Burger</option>
-        <option value="vegetarian">Vegetarian</option>
-        <option value="biryani">Biryani</option>
-        <option value="chinese">Chinese</option>
+        {% for c in cuisines %}
+        <option value="{{ c|lower }}">{{ c }}</option>
+        {% endfor %}
       </select>
 
       <select id="rating-filter">
         <option value="0">All Ratings</option>
-        <option value="4">4★ & above</option>
-        <option value="4.5">4.5★ & above</option>
+        {% for r in ratings %}
+        <option value="{{ r }}">{{ r }}★ & above</option>
+        {% endfor %}
       </select>
 
       <a href="{% url 'view_cart' %}" class="cart-btn">
