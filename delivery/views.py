@@ -557,9 +557,12 @@ def checkout(request, username):
 
 
     
-razorpay_client = razorpay.Client(
-    auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET)
-)
+razorpay_client = None
+if settings.RAZORPAY_KEY_ID and settings.RAZORPAY_KEY_SECRET:
+    razorpay_client = razorpay.Client(
+        auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET)
+    )
+
 
 @csrf_exempt
 def payment_success(request):

@@ -44,7 +44,10 @@
     </script>
 
     <script src="{% static 'js/modal.js' %}"></script>
-    <script>window.PAGE_NAME = "{{ request.resolver_match.url_name }}";</script>
+    <script>
+  window.PAGE_NAME = "{% if request.resolver_match %}{{ request.resolver_match.url_name }}{% endif %}";
+</script>
+
 
 </body>
 </html>
